@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
   <string>
-    <title value=""/>
+    <title value="老杨截图"/>
     <ver value="1.0"/>
+    <start value="开始"/>
+    <exit value="退出"/>
   </string>

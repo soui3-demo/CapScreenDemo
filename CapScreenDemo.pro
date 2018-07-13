@@ -22,17 +22,15 @@ PRECOMPILED_HEADER = stdafx.h
 HEADERS += CBitmap.h \
 	MainDlg.h \
 	resource.h \
-	CGidDc.h \
+	CGdiDc.h \
 	SnapshotDlg.h \
 	res/resource.h \
-	SSnapshotCtrl.h \
-	stdafx.h        
+	SSnapshotCtrl.h
 
 SOURCES += CapScreenDemo.cpp \
 	MainDlg.cpp \
 	SnapshotDlg.cpp \	
-	SSnapshotCtrl.cpp \
-	stdafx.cpp
+	SSnapshotCtrl.cpp
 
 RC_FILE += CapScreenDemo.rc
 RC_INCLUDEPATH+=$(SOUIPATH)/soui-sys-resource
