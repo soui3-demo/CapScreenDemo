@@ -25,7 +25,7 @@ HEADERS += CBitmap.h \
 	CGidDc.h \
 	SnapshotDlg.h \
 	res/resource.h \
-	SSnapshotCtrl \
+	SSnapshotCtrl.h \
 	stdafx.h        
 
 SOURCES += CapScreenDemo.cpp \
