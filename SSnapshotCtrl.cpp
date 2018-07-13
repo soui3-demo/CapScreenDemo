@@ -762,14 +762,13 @@ HBITMAP SSnapshotCtrl::CopyCurBitmap(int nx, int ny, int nWidth, int nHeight)
 		break;
 	default:
 		break;
-	}
-
-	HDC hMemDC; 
+	}	
+	CDC hMemDC; 
 	HBITMAP   hBitmap, hOldBitmap; 
 	hMemDC = CreateCompatibleDC(hDC);
 
 	hBitmap = CreateCompatibleBitmap(hDC, nWidth, nHeight);
-	hOldBitmap = (HBITMAP)SelectObject(hMemDC, hBitmap);
+	hOldBitmap = hMemDC.SelectBitmap(hBitmap);
 	BitBlt(hMemDC, 0, 0, nWidth, nHeight, hDC, 0, 0, SRCCOPY);
 	hBitmap = (HBITMAP)SelectObject(hMemDC, hOldBitmap);
 

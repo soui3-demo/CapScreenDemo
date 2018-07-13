@@ -626,6 +626,7 @@ void CSnapshotDlg::OnBnClickCopy()
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
 	pSnapshot->SaveCapBmpToClipboard();
+	EndDialog(IDOK);
 }
 
 void CSnapshotDlg::OnBnClickSave()
@@ -640,7 +641,10 @@ void CSnapshotDlg::OnBnClickCancel()
 
 void CSnapshotDlg::OnBnClickFinish()
 {
-	//
+	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
+	SASSERT(pSnapshot);
+	pSnapshot->SaveCapBmpToClipboard();
+	EndDialog(IDOK);
 }
 
 void CSnapshotDlg::OnBnClickSmallDot()
