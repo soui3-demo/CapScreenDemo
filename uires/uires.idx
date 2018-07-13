@@ -1,0 +1,60 @@
+﻿<resource>
+  <UIDEF>
+    <file name="XML_INIT" path="uidef\init.xml"/>
+  </UIDEF>
+  <LAYOUT>
+    <file name="XML_MAINWND" path="xml\dlg_main.xml"/>
+    <file name="XML_DLG_SNAPSHOT" path="xml\dlg_snapshot.xml" />
+      </LAYOUT>
+  
+  <values>
+  	<file name="string" path="values\string.xml"/>
+  	<file name="color" path="values\color.xml"/>
+  	<file name="skin" path="values\skin.xml"/>
+  </values>
+
+  <IMG>
+  </IMG>
+  
+  <PNG>
+    <file name="IDB_PNG_RECT" path="image\rect.png" />
+    <file name="IDB_PNG_ELLIPSE" path="image\ellipse.png" />
+    <file name="IDB_PNG_ARROW" path="image\arrow.png" />
+    <file name="IDB_PNG_WORD" path="image\word.png" />
+    <file name="IDB_PNG_FINISH" path="image\send.png" />
+    <file name="IDB_PNG_SAVE" path="image\save.png" />
+    <file name="IDB_PNG_CANCEL" path="image\close.png" />
+    <file name="IDB_PNG_DOODLE" path="image\doodle.png" />
+    <file name="IDB_PNG_COPY" path="image\copy.png" />
+    <file name="IDB_PNG_MASK" path="image\mask.png" />
+    <file name="IDB_PNG_REVOKE" path="image\revoke.png" />
+    
+    <file name="IDB_PNG_SMALLDOT" path="image\dotsmall.png" />
+    <file name="IDB_PNG_MIDDLEDOT" path="image\dotstd.png" />
+    <file name="IDB_PNG_BIGDOT" path="image\dotsbig.png" />
+    
+    <file name="IDB_PNG_C1" path="image\c1.png" />
+    <file name="IDB_PNG_C2" path="image\c2.png" />
+    <file name="IDB_PNG_C3" path="image\c3.png" />
+    <file name="IDB_PNG_C4" path="image\c4.png" />
+    <file name="IDB_PNG_C5" path="image\c5.png" />
+    <file name="IDB_PNG_C6" path="image\c6.png" />
+    <file name="IDB_PNG_C7" path="image\c7.png" />
+    <file name="IDB_PNG_C8" path="image\c8.png" />
+    <file name="IDB_PNG_C9" path="image\c9.png" />
+    <file name="IDB_PNG_C10" path="image\c10.png" />
+    <file name="IDB_PNG_C11" path="image\c11.png" />
+    <file name="IDB_PNG_C12" path="image\c12.png" />
+    <file name="IDB_PNG_C13" path="image\c13.png" />
+    <file name="IDB_PNG_C14" path="image\c14.png" />
+    <file name="IDB_PNG_C15" path="image\c15.png" />
+    <file name="IDB_PNG_C16" path="image\c16.png" />
+    <file name="IDB_PNG_C17" path="image\c17.png" />
+    <file name="IDB_PNG_C18" path="image\c18.png" />
+    <file name="IDB_PNG_C19" path="image\c19.png" />
+    <file name="IDB_PNG_C20" path="image\c20.png" />
+  </PNG>
+  <ICON>
+    <file name="ICON_LOGO"  path="image\soui.ico"/>
+  </ICON>
+    </resource>
