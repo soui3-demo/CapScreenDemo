@@ -1030,3 +1030,54 @@ void SSnapshotCtrl::SaveCapBmpToClipboard()
 		CloseClipboard();
 	}
 }
+
+void SSnapshotCtrl::SaveCapBmpToFile(LPCTSTR wstrSavePath)
+{
+	if (wstrSavePath == NULL)
+		return;
+
+	SOUI::CRect rcClient = GetClientRect();
+	CBitmap* pBitmap = m_vecBitmap.back();
+
+	CDC deskDc = CreateDC(L"DISPLAY", NULL, NULL, NULL);
+	CDC tempDc;
+	tempDc.CreateCompatibleDC(deskDc);
+	CDC dcMemory;
+	dcMemory.CreateCompatibleDC(deskDc);
+	CBitmapHandle membitmap;
+	membitmap.CreateCompatibleBitmap(deskDc, m_rcCapture.Width(), m_rcCapture.Height());
+	tempDc.SelectBitmap(pBitmap->m_hBitmap);
+	CBitmapHandle oldbitmap = dcMemory.SelectBitmap(membitmap);
+	dcMemory.BitBlt(0, 0, m_rcCapture.Width(), m_rcCapture.Height(), tempDc, m_rcCapture.left, m_rcCapture.top, SRCCOPY);
+	dcMemory.SelectBitmap(oldbitmap);
+
+	Bitmap bmp(membitmap, NULL);
+	CLSID encoderClsid;
+	GetEncoderClsid(L"image/png", &encoderClsid);
+	bmp.Save(wstrSavePath, &encoderClsid, NULL);
+}
+
+int SSnapshotCtrl::GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
+{
+	UINT num = 0;
+	UINT size = 0;
+	ImageCodecInfo* pImageCodecInfo = NULL;
+	GetImageEncodersSize(&num, &size);
+	if (size == 0) {
+		return -1;
+	}
+	pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
+	if (pImageCodecInfo == NULL) {
+		return -1;
+	}
+	GetImageEncoders(num, size, pImageCodecInfo);
+	for (UINT j = 0; j< num; ++j) {
+		if (wcscmp(pImageCodecInfo[j].MimeType, format) == 0) {
+			*pClsid = pImageCodecInfo[j].Clsid;
+			free(pImageCodecInfo);
+			return j;
+		}
+	}
+	free(pImageCodecInfo);
+	return -1;
+}

@@ -65,6 +65,8 @@ public:
 	void SetBmpResource(CBitmap* pBmp);
 	void SetScreenSize(int nScreenX, int nScreenY);
 	void SaveCapBmpToClipboard();
+	void SaveCapBmpToFile(LPCTSTR wstrSavePath);
+	int GetEncoderClsid(const WCHAR * format, CLSID * pClsid);
 	void SetOperateType(int nOperateType = -1);
 	void SetPenColor(const COLORREF& color);
 	void SetPenSize(int nPenSize = 1);

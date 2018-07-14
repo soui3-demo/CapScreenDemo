@@ -8,6 +8,8 @@ CONFIG(x64){
 TARGET = $$TARGET"64"
 }
 include($$(SOUIPATH)/demo_com.pri)
+INCLUDEPATH += $(SOUIPATH)/controls.extend
+
 
 CONFIG(debug,debug|release){
 	LIBS += utilitiesd.lib souid.lib

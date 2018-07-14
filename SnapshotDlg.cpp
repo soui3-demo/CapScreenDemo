@@ -1,7 +1,8 @@
 #include "StdAfx.h"
 #include "SnapshotDlg.h"
+#include <dlghelp/souidlgs.h>
 
-CSnapshotDlg::CSnapshotDlg(void)
+CSnapshotDlg::CSnapshotDlg()
 : SHostDialog(UIRES.LAYOUT.XML_DLG_SNAPSHOT)
 {
 	m_mapColorInfo.insert(std::make_pair(1, RGB(0,0,0)));
@@ -31,18 +32,23 @@ CSnapshotDlg::CSnapshotDlg(void)
 CSnapshotDlg::~CSnapshotDlg(void)
 {
 }
+//定义一个宏方便调试
+//#define MDEBUG
 
 BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
 {
-	SetMsgHandled(FALSE);
+	//SetMsgHandled(FALSE);
 	DEVMODE dm;
 	ZeroMemory(&dm, sizeof(dm));
 	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm);
 	int nxScreen, nyScreen;
+#ifndef MDEBUG
  	nxScreen = dm.dmPelsWidth;
  	nyScreen = dm.dmPelsHeight;
-//	nxScreen = 600;
-//	nyScreen = 400;
+#else
+	nxScreen = 600;
+	nyScreen = 400;
+#endif // !MDEBUG
 
 
 	::SetWindowPos(this->m_hWnd, HWND_TOPMOST, 0,0, nxScreen, nyScreen, SWP_SHOWWINDOW);
@@ -629,9 +635,27 @@ void CSnapshotDlg::OnBnClickCopy()
 	EndDialog(IDOK);
 }
 
-void CSnapshotDlg::OnBnClickSave()
+SStringT& CSnapshotDlg::CreateNewFileName(SStringT &filename)
 {
-	//
+	SYSTEMTIME sys;
+	GetLocalTime(&sys);
+	filename.Format(_T("老杨截图%4d%02d%02d%02d%02d%02d%03d"), sys.wYear, sys.wMonth, sys.wDay, sys.wHour, sys.wMinute, sys.wSecond, sys.wMilliseconds);
+	return filename;
+}
+
+void CSnapshotDlg::OnBnClickSave()
+{	
+	SStringT sstrFileName;
+	
+	CFileDialog saveDlg(FALSE, _T("png"), CreateNewFileName(sstrFileName), 6, _T("png(*.png)"));
+	if (saveDlg.DoModal() == IDOK)
+	{
+		sstrFileName = saveDlg.m_szFileName;
+		SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
+		SASSERT(pSnapshot);
+		pSnapshot->SaveCapBmpToFile(sstrFileName);
+		EndDialog(IDOK);
+	}
 }
 
 void CSnapshotDlg::OnBnClickCancel()

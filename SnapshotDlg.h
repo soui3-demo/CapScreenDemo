@@ -4,15 +4,15 @@
 
 class CSnapshotDlg : public SHostDialog
 {
-public:
-	CSnapshotDlg(void);
+public:	
 	~CSnapshotDlg(void);
-
+	CSnapshotDlg(void);
 protected:
 	BOOL OnInitDialog(HWND wnd, LPARAM lInitParam);
-	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-
+	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);	
 protected:
+	SStringT & CreateNewFileName(SStringT &filename);
+
 	bool OnEventCapturing(EventCapturing* pEvt);
 	bool OnEventRectMoving(EventRectMoving* pEvt);
 	bool OnEventRectCaptured(EventRectCaptured* pEvt);
@@ -26,6 +26,7 @@ protected:
 	void OnBnClickWord();
 	void OnBnClickRevoke();
 	void OnBnClickCopy();
+	
 	void OnBnClickSave();
 	void OnBnClickCancel();
 	void OnBnClickFinish();
@@ -102,8 +103,7 @@ protected:
 
 private:
 	std::map<int, COLORREF>	m_mapColorInfo;
-	int m_nSelectSize;
-
+	int m_nSelectSize;	
 private:
 	void SetSelectedColor(int nIndex);
 };
