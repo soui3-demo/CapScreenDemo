@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "SSnapshotCtrl.h"
+#include "CEdit9527.h"
+
 
 SSnapshotCtrl::SSnapshotCtrl(void)
 :m_pImgMask(NULL)
@@ -221,8 +223,12 @@ void SSnapshotCtrl::OnLButtonDown(UINT nFlags, SOUI::CPoint point)
 	}
 	else
 	{
-		if (PtInRect(&m_rcCapture, point))
+		if (PtInRect(&m_rcCapture, point)&& m_nOperateType!=6)
 			m_bDrawOperate = true;
+		else
+		{
+			m_clickPoint = point;
+		}
 	}
 }
 
@@ -234,6 +240,28 @@ void SSnapshotCtrl::OnLButtonUp(UINT nFlags, SOUI::CPoint point)
 	Invalidate();
 	ReleaseCapture();
 
+	if (m_nOperateType==6)
+	{
+		if (m_ClickTwo)
+		{
+			m_ClickTwo = FALSE;
+			SetFocus();
+		}
+		else
+		{
+			SWindow *pET = SApplication::getSingleton().CreateWindowByName(L"et9527");
+			SASSERT(pET);
+			SApplication::getSingleton().SetSwndDefAttr(pET);
+			this->InsertChild(pET);
+			pET->SSendMessage(WM_CREATE);
+			SStringT etPos;
+			etPos.Format(_T("%d,%d"), m_clickPoint.x, m_clickPoint.y);
+			pET->SetAttribute(L"pos", etPos);
+			pET->SetFocus();
+			m_ClickTwo = TRUE;
+		}
+		return;
+	}
 	if (m_bDrawOperate)
 	{
 		m_pBitmap = new CBitmap(CopyCurBitmap(0,0, m_nScreenX, m_nScreenY));
@@ -557,7 +585,7 @@ void SSnapshotCtrl::OnMouseMove(UINT nFlags, SOUI::CPoint point)
 			case 5:		//mask
 				m_vecMaskPoints.push_back(pt);
 				break;
-			default:
+			default://m_bDrawOperate = FALSE;
 				break;
 			}
 
@@ -700,6 +728,7 @@ void SSnapshotCtrl::SetOperateType(int nOperateType /* = -1 */)
 	*	5¡¢mask
 	*	6¡¢word
 	*/
+	m_ClickTwo = FALSE;
 	m_nOperateType = nOperateType;
 }
 
@@ -1021,6 +1050,17 @@ void SSnapshotCtrl::SaveCapBmpToClipboard()
 	tempDc.SelectBitmap(pBitmap->m_hBitmap);
 	CBitmapHandle oldbitmap = dcMemory.SelectBitmap(membitmap);
 	dcMemory.BitBlt(0, 0, m_rcCapture.Width(), m_rcCapture.Height(), tempDc, m_rcCapture.left, m_rcCapture.top, SRCCOPY);
+
+	SWindow *pChild = GetWindow(GSW_FIRSTCHILD);
+	while (pChild)
+	{
+		if (pChild->IsClass(_T("et9527")))
+		{
+			((CEdit9527*)pChild)->PaintToDC(dcMemory);
+		}
+		pChild = pChild->GetWindow(GSW_NEXTSIBLING);
+	}
+
 	dcMemory.SelectBitmap(oldbitmap);
 	
 	if (OpenClipboard(NULL))
@@ -1049,6 +1089,17 @@ void SSnapshotCtrl::SaveCapBmpToFile(LPCTSTR wstrSavePath)
 	tempDc.SelectBitmap(pBitmap->m_hBitmap);
 	CBitmapHandle oldbitmap = dcMemory.SelectBitmap(membitmap);
 	dcMemory.BitBlt(0, 0, m_rcCapture.Width(), m_rcCapture.Height(), tempDc, m_rcCapture.left, m_rcCapture.top, SRCCOPY);
+	
+	SWindow *pChild=GetWindow(GSW_FIRSTCHILD);
+	while (pChild)
+	{
+		if (pChild->IsClass(_T("et9527")))
+		{
+			((CEdit9527*)pChild)->PaintToDC(dcMemory);
+		}
+		pChild = pChild->GetWindow(GSW_NEXTSIBLING);
+	}
+
 	dcMemory.SelectBitmap(oldbitmap);
 
 	Bitmap bmp(membitmap, NULL);

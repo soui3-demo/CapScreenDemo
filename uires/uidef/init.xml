@@ -13,5 +13,7 @@
   </style>
 
   <objattr>
+    <imgbtn focusable="1"/>
+    <et9527 width="60" height="30" rich="1" valign="top" multiLines="1" allowBeep="1" maxBuf="108" autoSel="0" vscrollBar="1" margin="3,3,3,3"/>
   </objattr>
 </UIDEF>

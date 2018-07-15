@@ -27,12 +27,14 @@ HEADERS += CBitmap.h \
 	CGdiDc.h \
 	SnapshotDlg.h \
 	res/resource.h \
-	SSnapshotCtrl.h
+	SSnapshotCtrl.h \
+	CEdit9527.h
 
 SOURCES += CapScreenDemo.cpp \
 	MainDlg.cpp \
 	SnapshotDlg.cpp \	
-	SSnapshotCtrl.cpp
+	SSnapshotCtrl.cpp \
+	CEdit9527.cpp
 
 RC_FILE += CapScreenDemo.rc
 RC_INCLUDEPATH+=$(SOUIPATH)/soui-sys-resource

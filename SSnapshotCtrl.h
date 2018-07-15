@@ -144,4 +144,6 @@ private:
 	 bool			m_bDrawOperate;
 	 SOUI::CRect	m_rcRectangle;
 	 SOUI::CRect	m_rcEllipse;
+	 CPoint			m_clickPoint;
+	 BOOL			m_ClickTwo;
 };

@@ -33,7 +33,7 @@ CSnapshotDlg::~CSnapshotDlg(void)
 {
 }
 //定义一个宏方便调试
-//#define MDEBUG
+#define MDEBUG
 
 BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
 {
