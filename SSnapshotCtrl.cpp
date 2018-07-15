@@ -1050,7 +1050,8 @@ void SSnapshotCtrl::SaveCapBmpToClipboard()
 	tempDc.SelectBitmap(pBitmap->m_hBitmap);
 	CBitmapHandle oldbitmap = dcMemory.SelectBitmap(membitmap);
 	dcMemory.BitBlt(0, 0, m_rcCapture.Width(), m_rcCapture.Height(), tempDc, m_rcCapture.left, m_rcCapture.top, SRCCOPY);
-
+	
+	dcMemory.SetViewportOrg(-m_rcCapture.TopLeft());
 	SWindow *pChild = GetWindow(GSW_FIRSTCHILD);
 	while (pChild)
 	{
@@ -1089,7 +1090,7 @@ void SSnapshotCtrl::SaveCapBmpToFile(LPCTSTR wstrSavePath)
 	tempDc.SelectBitmap(pBitmap->m_hBitmap);
 	CBitmapHandle oldbitmap = dcMemory.SelectBitmap(membitmap);
 	dcMemory.BitBlt(0, 0, m_rcCapture.Width(), m_rcCapture.Height(), tempDc, m_rcCapture.left, m_rcCapture.top, SRCCOPY);
-	
+	dcMemory.SetViewportOrg(-m_rcCapture.TopLeft());
 	SWindow *pChild=GetWindow(GSW_FIRSTCHILD);
 	while (pChild)
 	{
