@@ -70,7 +70,10 @@ public:
 	void SetOperateType(int nOperateType = -1);
 	void SetPenColor(const COLORREF& color);
 	void SetPenSize(int nPenSize = 1);
-
+	void SetFontSize(int size)
+	{
+		m_FontSize = size;
+	}
 	SOUI::CRect GetCapRect(){return m_rcCapture;}
 	//增加一个方法来获取edit可以使用的最大大小
 	int GetEtMaxWid(CRect &etRc)
@@ -169,4 +172,5 @@ private:
 	 SOUI::CRect	m_rcEllipse;
 	 CPoint			m_clickPoint;
 	 BOOL			m_ClickTwo;
+	 int			m_FontSize;
 };

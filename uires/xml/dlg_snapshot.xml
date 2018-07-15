@@ -33,8 +33,18 @@
     <imgbtn size="-1,-1" name="btn_finish" skin="skin_finish" tip="完成截图" />
     <window size="2,-1" />
   </window>
-
   <window pos="10,10" size="-1,45" name="word_attrbar" colorBkgnd="RGB(255,255,255)" visible="0">
+    <combobox name="cbx_size" pos="5,10,@60,@30"  dropDown="1" dropHeight="300" class="cls_edit" dotted="0" animateTime="200" curSel="5">
+        <liststyle class="cls_edit" itemHeight="30" colorText="#000000" colorSelText="#FFFFFF" colorItemBkgnd="#FFFFFF" colorItemSelBkgnd="#000088"/>       
+        <items>
+          <item text="8" data="8"/>
+          <item text="10" data="10"/>
+          <item text="12" data="12"/>
+          <item text="14" data="14"/>
+          <item text="16" data="16"/>
+          <item text="18" data="18"/>
+        </items>     
+    </combobox>
   </window>
   <window pos="10,10" size="-1,45" name="other_attrbar" colorBkgnd="RGB(255,255,255)" visible="0">
     <imgbtn name="btn_smalldot" pos="5,10" skin="skin_smalldot" check="1"/>

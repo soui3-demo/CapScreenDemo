@@ -6,6 +6,7 @@
 SSnapshotCtrl::SSnapshotCtrl(void)
 :m_pImgMask(NULL)
 ,m_pBrushMask(NULL)
+, m_FontSize(18)
 {
 	m_bSelected = false;
 	m_bSelectOperate = false;
@@ -258,7 +259,7 @@ void SSnapshotCtrl::OnLButtonUp(UINT nFlags, SOUI::CPoint point)
 		}
 		else
 		{
-			SWindow *pET = SApplication::getSingleton().CreateWindowByName(L"et9527");
+			CEdit9527 *pET = (CEdit9527*)SApplication::getSingleton().CreateWindowByName(L"et9527");
 			SASSERT(pET);
 			SApplication::getSingleton().SetSwndDefAttr(pET);
 			this->InsertChild(pET);
@@ -267,6 +268,8 @@ void SSnapshotCtrl::OnLButtonUp(UINT nFlags, SOUI::CPoint point)
 			etPos.Format(_T("%d,%d"), m_clickPoint.x, m_clickPoint.y);
 			pET->SetAttribute(L"pos", etPos);
 			pET->SetFocus();
+			pET->SetTextColor(m_crPen);
+			pET->SetFontSize(m_FontSize);
 			m_ClickTwo = TRUE;
 		}
 		return;

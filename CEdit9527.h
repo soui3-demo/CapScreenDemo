@@ -9,6 +9,26 @@ namespace SOUI
 		CEdit9527();
 		~CEdit9527();
 		void PaintToDC(HDC hdc);
+		void SetFontSize(int size)
+		{
+			IFontPtr font=m_style.GetTextFont(0);
+			if (abs(font->TextSize()) != size)
+			{
+				SStringT strDesc;
+				strDesc.Format(_T("face:%s,size:%d"), font->FamilyName(),size);
+				IFontPtr pFont = SFontPool::getSingleton().GetFont(strDesc, GetScale());
+				if (SUCCEEDED(InitDefaultCharFormat(&m_cfDef, pFont)))
+				{
+					m_pTxtHost->GetTextService()->OnTxPropertyBitsChange(TXTBIT_CHARFORMATCHANGE,
+						TXTBIT_CHARFORMATCHANGE);
+				}
+			}
+		}
+		void SetTextColor(COLORREF color)
+		{
+			m_style.SetTextColor(0, color);
+			SetDefaultTextColor(m_style.GetTextColor(0));
+		}
 	protected:
 		LRESULT OnCreate(LPVOID);
 		//void OnDestroy();

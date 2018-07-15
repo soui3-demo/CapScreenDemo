@@ -55,6 +55,7 @@ protected:
 	void OnBnClickC18();
 	void OnBnClickC19();
 	void OnBnClickC20();
+	void OnCbxFontSizeChanged(EventArgs *pEvt);
 protected:
 	EVENT_MAP_BEGIN()
 		EVENT_NAME_COMMAND(L"btn_rect", OnBnClickRect)
@@ -93,6 +94,8 @@ protected:
 		EVENT_NAME_COMMAND(L"btn_c18", OnBnClickC18)
 		EVENT_NAME_COMMAND(L"btn_c19", OnBnClickC19)
 		EVENT_NAME_COMMAND(L"btn_c20", OnBnClickC20)
+
+		EVENT_NAME_HANDLER(L"cbx_size", EVT_CB_SELCHANGE, OnCbxFontSizeChanged);
 	EVENT_MAP_END()
 
 	BEGIN_MSG_MAP_EX(CSnapshotDlg)

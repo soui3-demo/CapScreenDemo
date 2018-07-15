@@ -601,6 +601,22 @@ void CSnapshotDlg::OnBnClickWord()
 	SImageButton* pImgBtnDoodle = FindChildByName2<SImageButton>(L"btn_doodle");
 	SImageButton* pImgBtnWord = FindChildByName2<SImageButton>(L"btn_word");
 	SImageButton* pImgBtnMask = FindChildByName2<SImageButton>(L"btn_mask");
+	
+	SWindow* pOperateBar = FindChildByName2<SWindow>(L"operate_bar");
+	SWindow* pInputAttrib = FindChildByName2<SWindow>(L"word_attrbar");
+	SASSERT(pOperateBar);
+	SASSERT(pInputAttrib);
+	pInputAttrib->SetVisible(TRUE, TRUE);
+
+	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
+	SOUI::CRect rcOtherAttr = pInputAttrib->GetWindowRect();
+	int nOtherAttrX = rcOperateBar.right - rcOtherAttr.Width();
+	int nOtherAttrY = rcOperateBar.bottom + 2;
+
+	SStringW ssOtherAttrPos;
+	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
+	pInputAttrib->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
+
 	SASSERT(pImgBtnRect);
 	SASSERT(pImgBtnEllipse);
 	SASSERT(pImgBtnArrow);
@@ -618,6 +634,7 @@ void CSnapshotDlg::OnBnClickWord()
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
 	pSnapshot->SetOperateType(6);
+	
 }
 
 void CSnapshotDlg::OnBnClickRevoke()
@@ -928,6 +945,17 @@ void CSnapshotDlg::OnBnClickC20()
 	SASSERT(pSnapshot);
 	pSnapshot->SetPenColor(color);
 	SetSelectedColor(20);
+}
+
+void CSnapshotDlg::OnCbxFontSizeChanged(EventArgs * pEvt)
+{
+	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
+	SASSERT(pSnapshot);
+	EventCBSelChange *e2=sobj_cast<EventCBSelChange>(pEvt);
+	SComboBox *pCbxFontSize=(SComboBox*)(e2->sender);
+	SASSERT(pCbxFontSize);
+	static const int sizelist[6] = {8,10,12,14,16,18};
+	pSnapshot->SetFontSize(sizelist[e2->nCurSel]);
 }
 
 void CSnapshotDlg::SetSelectedColor(int nIndex)
