@@ -34,10 +34,19 @@ SSnapshotCtrl::SSnapshotCtrl(void)
 	m_crPen = RGBA(0,0,0,255);
 	m_nPenSize = 1;
 
+	TCHAR szCurrentDir[MAX_PATH] = { 0 };
+	GetModuleFileName(NULL, szCurrentDir, sizeof(szCurrentDir));
+	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('\\'));
+	_tcscpy(lpInsertPos + 1, _T("..\\"));
+
+	SStringT sc_mask = szCurrentDir;
+	sc_mask += _T("SC_MASK.png");
+	SStringT mask = szCurrentDir;
+	mask += _T("mask.png");
 	if (!m_pImgMask)
-		m_pImgMask = new Image(L"SC_MASK.png");
+		m_pImgMask = new Image(sc_mask);
 	if (!m_pBrushMask)
-		m_pBrushMask = new Image(L"mask.png");
+		m_pBrushMask = new Image(mask);
 }
 
 SSnapshotCtrl::~SSnapshotCtrl(void)

@@ -8,7 +8,7 @@
       translucent="0">
 
 <root >
-  <SnapshotCtrl pos="0,0,-0,-0" name="snapshot" />
+  <SnapshotCtrl pos="0,0,-0,-0" name="snapshot"/>
   <text pos="15,15" 
         name="text_title" 
         colorText="#FFFFFF" 
@@ -16,7 +16,7 @@
         align="left"
         valign="center"
         colorBkgnd="#000000" 
-        font="face:微软雅黑,size:12"/>
+        font="face:微软雅黑,size:12"  visible="0"/>
 
   <window pos="10,10" size="-1,35" name="operate_bar" layout="hbox" gravity="center" colorBkgnd="RGB(255,255,255)" visible="0">
     <window size="2,-1"/>

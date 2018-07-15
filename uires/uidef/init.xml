@@ -5,15 +5,14 @@
   <string src="values:string" />
   <skin src="values:skin"/>
   <color src="values:color"/>
-
-
+  
   <style>
     <class name="normalbtn" font="" colorText="#385e8b" colorTextDisable="#91a7c0" textMode="0x25" cursor="hand" margin-x="0"/>
     <class name="cls_btn_weblink" cursor="hand" colorText="#1e78d5" colorTextHover="#1e78d5" font="italic:1" fontHover="underline:1,italic:1" />
   </style>
 
   <objattr>
-    <imgbtn focusable="1"/>
-    <et9527 width="60" height="30" rich="1" valign="top" multiLines="1" allowBeep="1" maxBuf="108" autoSel="0" vscrollBar="1" margin="3,3,3,3"/>
+    <imgbtn focusable="1" drawFocusRect="0"/>
+    <et9527 width="60" height="30" rich="1" sbWid="1" valign="top" font="size:18,face:微软雅黑" colorText="#ff00000" multiLines="1" hscrollBar="1" allowBeep="1" maxBuf="108" autoSel="0" vscrollBar="1" margin="3,3,3,3"/>
   </objattr>
 </UIDEF>

@@ -72,7 +72,30 @@ public:
 	void SetPenSize(int nPenSize = 1);
 
 	SOUI::CRect GetCapRect(){return m_rcCapture;}
-
+	//增加一个方法来获取edit可以使用的最大大小
+	int GetEtMaxWid(CRect &etRc)
+	{
+		return m_rcCapture.right - etRc.left;
+	}
+	void GetEtMovePos(CPoint &etPos,int etWid,int etHei)
+	{
+		if (etPos.x > m_rcCapture.right - etWid)
+		{
+			etPos.x = m_rcCapture.right - etWid;
+		}
+		else if(etPos.x < m_rcCapture.left)
+		{
+			etPos.x = m_rcCapture.left;
+		}
+		if (etPos.y > m_rcCapture.bottom - etHei)
+		{
+			etPos.y = m_rcCapture.bottom - etHei;
+		}
+		else if (etPos.y< m_rcCapture.top)
+		{
+			etPos.y = m_rcCapture.top;
+		}
+	}
 	void RevokeOperate();
 protected:
 	void OnPaint(IRenderTarget *pRT);
@@ -136,7 +159,7 @@ private:
 
 	 SOUI::CRect	m_rcPos[8];
 	 COLORREF		m_crBorder;
-	 EcPosType		m_eDraging;	
+	 EcPosType		m_eDraging;
 
 	 int			m_nOperateType;
 	 int			m_nPenSize;

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CEdit9527.h"
+#include "SSnapshotCtrl.h"
 
 namespace SOUI
 {
@@ -40,7 +41,7 @@ namespace SOUI
 		{
 			SSendMessage(EM_SETEVENTMASK, 0, ENM_CHANGE);
 			GetEventSet()->subscribeEvent(EVT_RE_NOTIFY, Subscriber(&CEdit9527::OnEditNotify, this));
-			SSendMessage(EM_SETTARGETDEVICE, 0, 0);
+			//SSendMessage(EM_SETTARGETDEVICE, 0, 0);
 			GetEventSet()->subscribeEvent(EVT_KILLFOCUS, Subscriber(&CEdit9527::OnKillFocus, this));
 		}
 		return bRet;
@@ -60,21 +61,11 @@ namespace SOUI
 
 	bool CEdit9527::OnEditNotify(EventArgs * e)
 	{
-		EventRENotify *pEvtNotify = sobj_cast<EventRENotify>(e);		
-		if (pEvtNotify->iNotify == EN_CHANGE)
-		{		
-			if (HasScrollBar(TRUE))
-			{
-				int iMin, iMax;
-				GetScrollRange(TRUE, &iMin, &iMax);
-				SStringT height;
-				height.Format(L"%d", iMax + 6);
-				SetAttribute(L"height", height);
-			}
-			else
-			{
+		EventRENotify *pEvtNotify = sobj_cast<EventRENotify>(e);
 
-			}
+		if (pEvtNotify->iNotify == EN_CHANGE)
+		{	
+			UpdataSize();
 		}
 		return true;
 	}
@@ -103,10 +94,37 @@ namespace SOUI
 		{
 			CRect rcWnd = GetWindowRect();
 			CPoint pt = rcWnd.TopLeft() + (point - m_ptClick);
+			((SSnapshotCtrl*)GetParent())->GetEtMovePos(pt, rcWnd.Width(),rcWnd.Height());
 			rcWnd.MoveToXY(pt);
 			Move(rcWnd);
 			m_ptClick = point;
 			GetParent()->Invalidate();
+		}
+	}
+
+	void CEdit9527::UpdataSize()
+	{
+		if (HasScrollBar(FALSE))
+		{
+			int iMin, iMax;
+			GetScrollRange(FALSE, &iMin, &iMax);
+			SStringT width;
+			iMax = max(iMax + 16, 60);
+			int max_wid = ((SSnapshotCtrl*)GetParent())->GetEtMaxWid(GetWindowRect());
+			iMax = min(max_wid, iMax);
+			width.Format(L"%d", iMax);
+			SetAttribute(L"width", width);
+			if (iMax == max_wid)
+				SSendMessage(EM_SETTARGETDEVICE, 0, 0);
+		}
+		if (HasScrollBar(TRUE))
+		{
+			int iMin, iMax;
+			GetScrollRange(TRUE, &iMin, &iMax);
+			SStringT height;
+			iMax = max(iMax + 16, 30);
+			height.Format(L"%d", iMax);
+			SetAttribute(L"height", height);
 		}
 	}
 
@@ -120,7 +138,9 @@ namespace SOUI
 		SStringT pos;
 		pos.Format(L"%d,%d", relpos.x, relpos.y);
 		SetAttribute(L"pos", pos);
+		SSendMessage(EM_SETTARGETDEVICE, 0, 1);
 		Move(NULL);
+		UpdataSize();
 	}
 
 	void CEdit9527::OnNcPaint(IRenderTarget * pRT)

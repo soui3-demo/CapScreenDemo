@@ -17,6 +17,7 @@ namespace SOUI
 		virtual BOOL OnSetCursor(const CPoint &pt);
 		void OnNcLButtonDown(UINT nHitTest, CPoint point);
 		void OnNcMouseMove(UINT nHitTest, CPoint point);
+		void UpdataSize();
 		void OnNcLButtonUp(UINT nHitTest, CPoint point);
 		void OnNcPaint(IRenderTarget *pRT);
 		BOOL OnEraseBkgnd(IRenderTarget * pRT);
