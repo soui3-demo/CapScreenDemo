@@ -53,6 +53,10 @@
     <file name="IDB_PNG_C18" path="image\c18.png" />
     <file name="IDB_PNG_C19" path="image\c19.png" />
     <file name="IDB_PNG_C20" path="image\c20.png" />
+    
+    <file name="IDB_PNG_WORDSING" path="image\word_sign.png" />
+    <file name="IDB_PNG_CBXBTN" path="image\cbx_btn.png" />
+    <file name="IDB_PNG_VLINE" path="image\vlinepx33.png" />
   </PNG>
   <ICON>
     <file name="ICON_LOGO"  path="image\soui.ico"/>

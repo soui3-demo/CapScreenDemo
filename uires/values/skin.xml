@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <skin>
-  	<imglist name="skin_traymenu_icons"	src="img:traymenu_icons" states="9"/>
+  <imglist name="skin_traymenu_icons"	src="img:traymenu_icons" states="9"/>
   
   <imglist name="skin_rect" src="PNG:IDB_PNG_RECT" states="4" />
   <imglist name="skin_ellipse" src="PNG:IDB_PNG_ELLIPSE" states="4" />
@@ -39,4 +39,8 @@
   <imglist name="skin_c18" src="PNG:IDB_PNG_C18" states="4" />
   <imglist name="skin_c19" src="PNG:IDB_PNG_C19" states="4" />
   <imglist name="skin_c20" src="PNG:IDB_PNG_C20" states="4" />
+
+  <imgframe name="skin_vline" src="PNG:IDB_PNG_VLINE" />
+  <imgframe name="skin_word_sign" src="PNG:IDB_PNG_WORDSING" />
+  <imglist name="skin_cbx_btn" src="PNG:IDB_PNG_CBXBTN" states="3" />
 </skin>

@@ -233,12 +233,19 @@ void SSnapshotCtrl::OnLButtonDown(UINT nFlags, SOUI::CPoint point)
 	}
 	else
 	{
-		if (PtInRect(&m_rcCapture, point)&& m_nOperateType!=6)
-			m_bDrawOperate = true;
-		else
+		if (PtInRect(&m_rcCapture, point))
 		{
-			m_clickPoint = point;
+			if (6 != m_nOperateType)
+				m_bDrawOperate = true;
+			else
+				m_clickPoint = point;
 		}
+// 		if (PtInRect(&m_rcCapture, point) && m_nOperateType!=6)
+// 			m_bDrawOperate = true;
+// 		else
+// 		{
+// 			m_clickPoint = point;
+// 		}
 	}
 }
 

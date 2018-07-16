@@ -2,6 +2,8 @@
 #include "SnapshotDlg.h"
 #include <dlghelp/souidlgs.h>
 
+#include "WordSizeAdapter.h"
+
 CSnapshotDlg::CSnapshotDlg()
 : SHostDialog(UIRES.LAYOUT.XML_DLG_SNAPSHOT)
 {
@@ -82,16 +84,32 @@ BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
 
 
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
-	if (pSnapshot)
-	{
-		pSnapshot->SetBmpResource(new CBitmap(hBitmap));
-		pSnapshot->SetScreenSize(nxScreen, nyScreen);
+	SASSERT(pSnapshot);
+	pSnapshot->SetBmpResource(new CBitmap(hBitmap));
+	pSnapshot->SetScreenSize(nxScreen, nyScreen);
 
-		pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventCapturing, this);
-		pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventRectMoving, this);
-		pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventRectCaptured, this);
-		pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventRectDbClk, this);
-	}
+	pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventCapturing, this);
+	pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventRectMoving, this);
+	pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventRectCaptured, this);
+	pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventRectDbClk, this);
+
+	SComboView* pWordSizeCbxView = FindChildByName2<SComboView>(L"cbx_wordsize");
+	SASSERT(pWordSizeCbxView);
+	SListView* pListview = pWordSizeCbxView->GetListView();
+	SASSERT(pListview);
+	CWordSizeAdapter* pWordSizeAdapter = new CWordSizeAdapter(this);
+	pListview->SetAdapter(pWordSizeAdapter);
+	pWordSizeAdapter->Release();
+
+	pWordSizeAdapter->AddWordSize(L"10");
+	pWordSizeAdapter->AddWordSize(L"12");
+	pWordSizeAdapter->AddWordSize(L"14");
+	pWordSizeAdapter->AddWordSize(L"16");
+	pWordSizeAdapter->AddWordSize(L"18");
+	pWordSizeAdapter->AddWordSize(L"20");
+
+	pWordSizeCbxView->SetCurSel(0);
+	pSnapshot->SetFontSize(10);
 
 	return TRUE;
 }
@@ -241,10 +259,18 @@ void CSnapshotDlg::OnBnClickRect()
 	pImgBtnWord->SetCheck(FALSE);
 
 	SWindow* pOperateBar = FindChildByName2<SWindow>(L"operate_bar");
-	SWindow* pOtherAttr = FindChildByName2<SWindow>(L"other_attrbar");
 	SASSERT(pOperateBar);
+	SWindow* pAttrBar = FindChildByName2<SWindow>(L"attrbar");
+	SASSERT(pAttrBar);
+	SWindow* pWordAttr = pAttrBar->FindChildByName2<SWindow>(L"word_attrbar");
+	SWindow* pOtherAttr = pAttrBar->FindChildByName2<SWindow>(L"other_attrbar");
+	SASSERT(pWordAttr);
 	SASSERT(pOtherAttr);
 
+	if (!pAttrBar->IsVisible())
+		pAttrBar->SetVisible(TRUE, FALSE);
+	if (pWordAttr->IsVisible())
+		pWordAttr->SetVisible(FALSE, FALSE);
 	if (!pOtherAttr->IsVisible())
 		pOtherAttr->SetVisible(TRUE, FALSE);
 
@@ -280,13 +306,13 @@ void CSnapshotDlg::OnBnClickRect()
 	}
 
 	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	SOUI::CRect rcOtherAttr = pOtherAttr->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcOtherAttr.Width();
+	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
+	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
 	int nOtherAttrY = rcOperateBar.bottom + 2;
 
 	SStringW ssOtherAttrPos;
 	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pOtherAttr->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
+	pAttrBar->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
 
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
@@ -316,10 +342,18 @@ void CSnapshotDlg::OnBnClickEllipse()
 	pImgBtnWord->SetCheck(FALSE);
 
 	SWindow* pOperateBar = FindChildByName2<SWindow>(L"operate_bar");
-	SWindow* pOtherAttr = FindChildByName2<SWindow>(L"other_attrbar");
 	SASSERT(pOperateBar);
+	SWindow* pAttrBar = FindChildByName2<SWindow>(L"attrbar");
+	SASSERT(pAttrBar);
+	SWindow* pWordAttr = pAttrBar->FindChildByName2<SWindow>(L"word_attrbar");
+	SWindow* pOtherAttr = pAttrBar->FindChildByName2<SWindow>(L"other_attrbar");
+	SASSERT(pWordAttr);
 	SASSERT(pOtherAttr);
 
+	if (!pAttrBar->IsVisible())
+		pAttrBar->SetVisible(TRUE, FALSE);
+	if (pWordAttr->IsVisible())
+		pWordAttr->SetVisible(FALSE, FALSE);
 	if (!pOtherAttr->IsVisible())
 		pOtherAttr->SetVisible(TRUE, FALSE);
 
@@ -355,13 +389,13 @@ void CSnapshotDlg::OnBnClickEllipse()
 	}
 
 	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	SOUI::CRect rcOtherAttr = pOtherAttr->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcOtherAttr.Width();
+	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
+	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
 	int nOtherAttrY = rcOperateBar.bottom + 2;
 
 	SStringW ssOtherAttrPos;
 	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pOtherAttr->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
+	pAttrBar->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
 
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
@@ -391,10 +425,18 @@ void CSnapshotDlg::OnBnClickArrow()
 	pImgBtnWord->SetCheck(FALSE);
 
 	SWindow* pOperateBar = FindChildByName2<SWindow>(L"operate_bar");
-	SWindow* pOtherAttr = FindChildByName2<SWindow>(L"other_attrbar");
 	SASSERT(pOperateBar);
+	SWindow* pAttrBar = FindChildByName2<SWindow>(L"attrbar");
+	SASSERT(pAttrBar);
+	SWindow* pWordAttr = pAttrBar->FindChildByName2<SWindow>(L"word_attrbar");
+	SWindow* pOtherAttr = pAttrBar->FindChildByName2<SWindow>(L"other_attrbar");
+	SASSERT(pWordAttr);
 	SASSERT(pOtherAttr);
 
+	if (!pAttrBar->IsVisible())
+		pAttrBar->SetVisible(TRUE, FALSE);
+	if (pWordAttr->IsVisible())
+		pWordAttr->SetVisible(FALSE, FALSE);
 	if (!pOtherAttr->IsVisible())
 		pOtherAttr->SetVisible(TRUE, FALSE);
 
@@ -430,13 +472,13 @@ void CSnapshotDlg::OnBnClickArrow()
 	}
 
 	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	SOUI::CRect rcOtherAttr = pOtherAttr->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcOtherAttr.Width();
+	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
+	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
 	int nOtherAttrY = rcOperateBar.bottom + 2;
 
 	SStringW ssOtherAttrPos;
 	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pOtherAttr->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
+	pAttrBar->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
 
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
@@ -466,10 +508,18 @@ void CSnapshotDlg::OnBnClickDoodle()
 	pImgBtnWord->SetCheck(FALSE);
 
 	SWindow* pOperateBar = FindChildByName2<SWindow>(L"operate_bar");
-	SWindow* pOtherAttr = FindChildByName2<SWindow>(L"other_attrbar");
 	SASSERT(pOperateBar);
+	SWindow* pAttrBar = FindChildByName2<SWindow>(L"attrbar");
+	SASSERT(pAttrBar);
+	SWindow* pWordAttr = pAttrBar->FindChildByName2<SWindow>(L"word_attrbar");
+	SWindow* pOtherAttr = pAttrBar->FindChildByName2<SWindow>(L"other_attrbar");
+	SASSERT(pWordAttr);
 	SASSERT(pOtherAttr);
 
+	if (!pAttrBar->IsVisible())
+		pAttrBar->SetVisible(TRUE, FALSE);
+	if (pWordAttr->IsVisible())
+		pWordAttr->SetVisible(FALSE, FALSE);
 	if (!pOtherAttr->IsVisible())
 		pOtherAttr->SetVisible(TRUE, FALSE);
 
@@ -505,13 +555,13 @@ void CSnapshotDlg::OnBnClickDoodle()
 	}
 
 	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	SOUI::CRect rcOtherAttr = pOtherAttr->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcOtherAttr.Width();
+	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
+	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
 	int nOtherAttrY = rcOperateBar.bottom + 2;
 
 	SStringW ssOtherAttrPos;
 	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pOtherAttr->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
+	pAttrBar->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
 
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
@@ -541,10 +591,18 @@ void CSnapshotDlg::OnBnClickMask()
 	pImgBtnWord->SetCheck(FALSE);
 
 	SWindow* pOperateBar = FindChildByName2<SWindow>(L"operate_bar");
-	SWindow* pOtherAttr = FindChildByName2<SWindow>(L"other_attrbar");
 	SASSERT(pOperateBar);
+	SWindow* pAttrBar = FindChildByName2<SWindow>(L"attrbar");
+	SASSERT(pAttrBar);
+	SWindow* pWordAttr = pAttrBar->FindChildByName2<SWindow>(L"word_attrbar");
+	SWindow* pOtherAttr = pAttrBar->FindChildByName2<SWindow>(L"other_attrbar");
+	SASSERT(pWordAttr);
 	SASSERT(pOtherAttr);
 
+	if (!pAttrBar->IsVisible())
+		pAttrBar->SetVisible(TRUE, FALSE);
+	if (pWordAttr->IsVisible())
+		pWordAttr->SetVisible(FALSE, FALSE);
 	if (!pOtherAttr->IsVisible())
 		pOtherAttr->SetVisible(TRUE, FALSE);
 
@@ -580,13 +638,13 @@ void CSnapshotDlg::OnBnClickMask()
 	}
 
 	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	SOUI::CRect rcOtherAttr = pOtherAttr->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcOtherAttr.Width();
+	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
+	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
 	int nOtherAttrY = rcOperateBar.bottom + 2;
 
 	SStringW ssOtherAttrPos;
 	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pOtherAttr->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
+	pAttrBar->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
 
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
@@ -603,19 +661,29 @@ void CSnapshotDlg::OnBnClickWord()
 	SImageButton* pImgBtnMask = FindChildByName2<SImageButton>(L"btn_mask");
 	
 	SWindow* pOperateBar = FindChildByName2<SWindow>(L"operate_bar");
-	SWindow* pInputAttrib = FindChildByName2<SWindow>(L"word_attrbar");
 	SASSERT(pOperateBar);
-	SASSERT(pInputAttrib);
-	pInputAttrib->SetVisible(TRUE, TRUE);
+	SWindow* pAttrBar = FindChildByName2<SWindow>(L"attrbar");
+	SASSERT(pAttrBar);
+	SWindow* pWordAttr = pAttrBar->FindChildByName2<SWindow>(L"word_attrbar");
+	SWindow* pOtherAttr = pAttrBar->FindChildByName2<SWindow>(L"other_attrbar");
+	SASSERT(pWordAttr);
+	SASSERT(pOtherAttr);
+
+	if (!pAttrBar->IsVisible())
+		pAttrBar->SetVisible(TRUE, FALSE);
+	if (pOtherAttr->IsVisible())
+		pOtherAttr->SetVisible(FALSE, FALSE);
+	if (!pWordAttr->IsVisible())
+		pWordAttr->SetVisible(TRUE, FALSE);
 
 	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	SOUI::CRect rcOtherAttr = pInputAttrib->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcOtherAttr.Width();
+	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
+	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
 	int nOtherAttrY = rcOperateBar.bottom + 2;
 
-	SStringW ssOtherAttrPos;
-	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pInputAttrib->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
+	SStringW sstrAttrBarPos;
+	sstrAttrBarPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
+	pAttrBar->SetAttribute(L"pos", sstrAttrBarPos, FALSE);
 
 	SASSERT(pImgBtnRect);
 	SASSERT(pImgBtnEllipse);
@@ -947,21 +1015,10 @@ void CSnapshotDlg::OnBnClickC20()
 	SetSelectedColor(20);
 }
 
-void CSnapshotDlg::OnCbxFontSizeChanged(EventArgs * pEvt)
-{
-	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
-	SASSERT(pSnapshot);
-	EventCBSelChange *e2=sobj_cast<EventCBSelChange>(pEvt);
-	SComboBox *pCbxFontSize=(SComboBox*)(e2->sender);
-	SASSERT(pCbxFontSize);
-	static const int sizelist[6] = {8,10,12,14,16,18};
-	pSnapshot->SetFontSize(sizelist[e2->nCurSel]);
-}
-
 void CSnapshotDlg::SetSelectedColor(int nIndex)
 {
-	SWindow* pOtherAttr = FindChildByName2<SWindow>(L"other_attrbar");
-	SASSERT(pOtherAttr);
+	SWindow* pAttrBar = FindChildByName2<SWindow>(L"attrbar");
+	SASSERT(pAttrBar);
 	SWindow* pWindow = FindChildByName2<SWindow>(L"selected_window");
 	SASSERT(pWindow);
 	SWindow* pSelectColor = pWindow->FindChildByName2<SWindow>(L"selected_color");
@@ -969,4 +1026,17 @@ void CSnapshotDlg::SetSelectedColor(int nIndex)
 	SStringW sstrColor;
 	sstrColor.Format(L"RGB(%d,%d,%d)", GetRValue(m_mapColorInfo[nIndex]), GetGValue(m_mapColorInfo[nIndex]), GetBValue(m_mapColorInfo[nIndex]));
 	pSelectColor->SetAttribute(L"colorBkgnd", sstrColor, FALSE);
+}
+
+void CSnapshotDlg::OnClickItem(int nIndex)
+{
+	SComboView* pWordSizeCbxView = FindChildByName2<SComboView>(L"cbx_wordsize");
+	SASSERT(pWordSizeCbxView);
+	if (-1 != nIndex)
+		pWordSizeCbxView->SetCurSel(nIndex);
+
+ 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
+ 	SASSERT(pSnapshot);
+ 	static const int sizelist[6] = {10,12,14,16,18,20};
+ 	pSnapshot->SetFontSize(sizelist[nIndex]);
 }
