@@ -1,11 +1,10 @@
 #include "StdAfx.h"
 #include "SSnapshotCtrl.h"
 #include "CEdit9527.h"
-
+#include "CPixelateGrid.h"
 
 SSnapshotCtrl::SSnapshotCtrl(void)
-:m_pImgMask(NULL)
-,m_pBrushMask(NULL)
+: m_MaskBitmap(NULL)
 , m_FontSize(18)
 {
 	m_bSelected = false;
@@ -33,38 +32,15 @@ SSnapshotCtrl::SSnapshotCtrl(void)
 	m_evtSet.addEvent(EVENTID(EventRectDbClk));
 
 	m_crPen = RGBA(0,0,0,255);
-	m_nPenSize = 1;
-
-	TCHAR szCurrentDir[MAX_PATH] = { 0 };
-	GetModuleFileName(NULL, szCurrentDir, sizeof(szCurrentDir));
-	LPTSTR lpInsertPos = _tcsrchr(szCurrentDir, _T('\\'));
-	_tcscpy(lpInsertPos + 1, _T("..\\"));
-
-	SStringT sc_mask = szCurrentDir;
-	sc_mask += _T("SC_MASK.png");
-	SStringT mask = szCurrentDir;
-	mask += _T("mask.png");
-	if (!m_pImgMask)
-		m_pImgMask = new Image(sc_mask);
-	if (!m_pBrushMask)
-		m_pBrushMask = new Image(mask);
+	m_nPenSize = 1;	
 }
 
 SSnapshotCtrl::~SSnapshotCtrl(void)
 {
-	//if (m_pBitmap)
-	//	m_pBitmap->DeleteObject();
-
-	if (m_pImgMask)
+	if (m_MaskBitmap)
 	{
-		delete m_pImgMask;
-		m_pImgMask = NULL;
-	}
-
-	if (m_pBrushMask)
-	{
-		delete m_pBrushMask;
-		m_pBrushMask = NULL;
+		delete m_MaskBitmap;
+		m_MaskBitmap = NULL;
 	}
 
 	for (int i = 0; i < m_vecBitmap.size(); i++)
@@ -84,28 +60,24 @@ void SSnapshotCtrl::OnPaint(IRenderTarget *pRT)
 	BitBlt(hDC, 0,0, rect.Width(), rect.Height(), dcCompatible, 0,0, SRCCOPY);
 
 	Graphics graph(hDC);
-	RectF rcDrawRect;
+	Rect rcDrawRect;
 	rcDrawRect.X = 0;
 	rcDrawRect.Y = 0;
-	rcDrawRect.Width = (REAL)rect.Width();
-	rcDrawRect.Height = (REAL)rect.Height();
+	rcDrawRect.Width = rect.Width();
+	rcDrawRect.Height = rect.Height();
+
+	SolidBrush greenBrush(Color(120, 0, 0, 0));
 	if (m_rcCapture.IsRectEmpty())
 	{
-		graph.DrawImage(m_pImgMask, rcDrawRect, 0,0, 2, 2, UnitPixel);
+		graph.FillRectangle(&greenBrush, rcDrawRect);
 	}
 	else
 	{
-		RectF rcLeft, rcTop, rcRight, rcBottom;
-		CalcGrayAreaRect(m_rcCapture, rcLeft, rcTop, rcRight, rcBottom);
-		SOUI::CRect rcMask(0,0,10,10);
-		if (!rcLeft.IsEmptyArea())
-			graph.DrawImage(m_pImgMask, rcLeft, 0,0, 2, 2, UnitPixel);
-		if (!rcTop.IsEmptyArea())
-			graph.DrawImage(m_pImgMask, rcTop, 0,0, 2, 2, UnitPixel);
-		if (!rcRight.IsEmptyArea())
-			graph.DrawImage(m_pImgMask, rcRight, 0,0, 2, 2, UnitPixel);
-		if (!rcBottom.IsEmptyArea())
-			graph.DrawImage(m_pImgMask, rcBottom, 0,0, 2, 2, UnitPixel);
+		graph.SetClip(rcDrawRect);
+		Rect rcCapRect(m_rcCapture.left, m_rcCapture.top, m_rcCapture.Width(), m_rcCapture.Height());
+		graph.ExcludeClip(rcCapRect);
+		graph.FillRectangle(&greenBrush, rcDrawRect);
+		graph.ResetClip();
 	}
 
 	if (!m_rcCapture.IsRectEmpty())
@@ -287,7 +259,6 @@ void SSnapshotCtrl::OnLButtonUp(UINT nFlags, SOUI::CPoint point)
 		if (m_pBitmap)
 			m_vecBitmap.push_back(m_pBitmap);
 	}
-
 	m_bDrawOperate = false;
 	m_rcEllipse.SetRectEmpty();
 	m_rcRectangle.SetRectEmpty();
@@ -749,6 +720,21 @@ void SSnapshotCtrl::SetOperateType(int nOperateType /* = -1 */)
 	*/
 	m_ClickTwo = FALSE;
 	m_nOperateType = nOperateType;
+	if (nOperateType == 5)
+	{
+		if (m_MaskBitmap == NULL)
+			m_MaskBitmap = new Gdiplus::Bitmap(*m_pBitmap, NULL);
+		else m_MaskBitmap->FromHBITMAP(*m_pBitmap, NULL);
+		SASSERT(m_MaskBitmap);
+		int nMaskSize = 0;
+		if (1 == m_nPenSize)
+			nMaskSize = 6;
+		else if (2 == m_nPenSize)
+			nMaskSize = 12;
+		else
+			nMaskSize = 18;
+		CPixelateGrid::Pixelate(*m_MaskBitmap, nMaskSize, true);
+	}
 }
 
 void SSnapshotCtrl::SetPenColor(const COLORREF& color)
@@ -1012,13 +998,15 @@ void SSnapshotCtrl::DrawDoodle(IRenderTarget* pRT, const std::vector<SOUI::CPoin
 
 void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<SOUI::CPoint> vecPoints)
 {
+	if (m_MaskBitmap == NULL)
+		return;
 	int nMaskSize = 0;
 	if (1 == m_nPenSize)
-		nMaskSize = 15;
+		nMaskSize = 6;
 	else if (2 == m_nPenSize)
-		nMaskSize = 25;
+		nMaskSize = 12;
 	else
-		nMaskSize = 35;
+		nMaskSize = 18;
 
 	SOUI::CRect rt(0,0, m_nScreenX, m_nScreenY);
 	HDC hDC = pRT->GetDC();
@@ -1028,8 +1016,9 @@ void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<SOUI::CPoint>
 
 	BitBlt(hDC, 0,0, rt.Width(), rt.Height(), dcCompatible, 0,0, SRCCOPY);
 
-	Graphics graphics(hDC);
-	Gdiplus::TextureBrush tBrush(m_pBrushMask);
+	Gdiplus::Graphics graphics(hDC);	
+
+	Gdiplus::TextureBrush tBrush((Gdiplus::Image*)m_MaskBitmap);
 	Pen hPen(&tBrush, nMaskSize);
 	graphics.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);  
 
@@ -1047,8 +1036,11 @@ void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<SOUI::CPoint>
 			}
 		}
 	}
-
+	//graphics.DrawPath((Gdiplus::Brush*)&tBrush, &maskPath);
+	Gdiplus::Rect rcClip(m_rcCapture.left, m_rcCapture.top, m_rcCapture.Width(), m_rcCapture.Height());
+	graphics.SetClip(rcClip);
 	graphics.DrawPath(&hPen, &maskPath);
+	graphics.ResetClip();
 	CDCHandle hDesDC = hDC;
 	hDesDC.BitBlt(rt.left, rt.top, rt.Width(), rt.Height(), hDC, 0, 0, SRCCOPY | CAPTUREBLT);
 	pRT->ReleaseDC(hDC);

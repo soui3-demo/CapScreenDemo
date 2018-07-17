@@ -144,8 +144,9 @@ protected:
 
 private:
 	 CBitmap*					m_pBitmap;
-	 Image*						m_pImgMask;
-	 Image*						m_pBrushMask;
+	 //Gdiplus::Image*			m_pImgMask;
+	 //Image*					m_pBrushMask;
+	 Gdiplus::Bitmap*			m_MaskBitmap;
 	 int						m_nScreenX, m_nScreenY;
 	 std::vector<CBitmap*>		m_vecBitmap;
 
