@@ -80,6 +80,10 @@ public:
 	{
 		return m_rcCapture.right - etRc.left;
 	}
+	int GetEtMaxHei(CRect &etRc)
+	{
+		return m_rcCapture.bottom - etRc.top;
+	}
 	void GetEtMovePos(CPoint &etPos,int etWid,int etHei)
 	{
 		if (etPos.x > m_rcCapture.right - etWid)
