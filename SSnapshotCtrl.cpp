@@ -726,14 +726,19 @@ void SSnapshotCtrl::SetOperateType(int nOperateType /* = -1 */)
 			m_MaskBitmap = new Gdiplus::Bitmap(*m_pBitmap, NULL);
 		else m_MaskBitmap->FromHBITMAP(*m_pBitmap, NULL);
 		SASSERT(m_MaskBitmap);
-		int nMaskSize = 0;
-		if (1 == m_nPenSize)
-			nMaskSize = 6;
-		else if (2 == m_nPenSize)
-			nMaskSize = 12;
-		else
-			nMaskSize = 18;
-		CPixelateGrid::Pixelate(*m_MaskBitmap, nMaskSize, true);
+
+		//modify by yangjinpeng 2018-07-18
+		//设置马赛克位图块大小，可有可无
+		//begin
+// 		int nMaskSize = 0;
+// 		if (1 == m_nPenSize)
+// 			nMaskSize = 6;
+// 		else if (2 == m_nPenSize)
+// 			nMaskSize = 12;
+// 		else
+// 			nMaskSize = 18;
+		//end
+		CPixelateGrid::Pixelate(*m_MaskBitmap, 10, false);
 	}
 }
 
@@ -1027,10 +1032,14 @@ void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<SOUI::CPoint>
 	{
 		if (vecPoints.size() > i+1)
 		{
-			if (vecPoints[i+1].x + nMaskSize >= m_rcCapture.left && 
-				vecPoints[i+1].x + nMaskSize <= m_rcCapture.right &&
-				vecPoints[i+1].y + nMaskSize >= m_rcCapture.top &&
-				vecPoints[i+1].y + nMaskSize <= m_rcCapture.bottom)
+			//modify by yangjinpeng	2018-07-18
+			//画mask方式更改，将之前边界的限制去掉
+			//begin
+// 			if (vecPoints[i+1].x + nMaskSize >= m_rcCapture.left && 
+// 				vecPoints[i+1].x + nMaskSize <= m_rcCapture.right &&
+// 				vecPoints[i+1].y + nMaskSize >= m_rcCapture.top &&
+// 				vecPoints[i+1].y + nMaskSize <= m_rcCapture.bottom)
+			//end
 			{
 				maskPath.AddLine(vecPoints[i].x, vecPoints[i].y, vecPoints[i+1].x, vecPoints[i+1].y);
 			}

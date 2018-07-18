@@ -108,8 +108,8 @@ BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
 	pWordSizeAdapter->AddWordSize(L"18");
 	pWordSizeAdapter->AddWordSize(L"20");
 
-	pWordSizeCbxView->SetCurSel(0);
-	pSnapshot->SetFontSize(10);
+	pWordSizeCbxView->SetCurSel(4);
+	pSnapshot->SetFontSize(18);
 
 	return TRUE;
 }

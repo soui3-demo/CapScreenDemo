@@ -5,7 +5,7 @@ class CPixelateGrid
 	~CPixelateGrid() {};
 	static bool OffsetFilter(Bitmap &b, Point **offset)
 	{
-		Rect bitmapRc{ 0,0,(INT)b.GetWidth(),(INT)b.GetHeight()};
+		Rect bitmapRc(0,0,(INT)b.GetWidth(),(INT)b.GetHeight());
 		Bitmap *bSrc = b.Clone(bitmapRc, PixelFormat32bppRGB);
 
 		// GDI+ still lies to us - the return format is BGR, NOT RGB.

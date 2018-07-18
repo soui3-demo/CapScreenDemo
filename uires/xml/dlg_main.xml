@@ -1,17 +1,11 @@
-﻿<SOUI name="mainWindow" title="@string/title" bigIcon="ICON_LOGO:32" smallIcon="ICON_LOGO:16" width="200" height="88"  margin="5,5,5,5"  resizable="0" wndType="appMain"
-appWnd="1"
-translucent="1" 
->
-  <root skin="_skin.sys.wnd.bkgnd" cache="1">
-    <caption pos="0,0,-0,30" show="1" font="adding:0">
-      <icon pos="10,8" src="ICON_LOGO:16"/>
-      <text pos="|0,|0" offset="-0.5,-0.5">@string/title</text>
-    </caption>
-    <check pos="12,[" name="autohide" checked="1" text="自动隐藏"/>
-    <window pos="0,[0,-0,-0" layout="hbox" padding="20,10,20,10">
-      <button size="0,-2" name="btn_start" weight="1" text="@string/start"/>
-      <window size="20,0" visible="0"/>
-      <button size="0,-2" name="btn_exit" weight="1" text="@string/exit"/>
-    </window>
+﻿<SOUI name="window"
+      width="0"
+      height="0"
+      margin="0,0,0,0"
+      toolWindow="0"
+      wndType="normal"
+      translucent="1"
+	  toolWindow="1">
+  <root cache="1">
   </root>
 </SOUI>
