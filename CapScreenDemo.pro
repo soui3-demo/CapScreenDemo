@@ -28,7 +28,9 @@ HEADERS += CBitmap.h \
 	SnapshotDlg.h \
 	res/resource.h \
 	SSnapshotCtrl.h \
-	CEdit9527.h
+	CEdit9527.h \
+        WordSizeAdapter.h \
+        IWordSizeAdapterCallback.h
 
 SOURCES += CapScreenDemo.cpp \
 	MainDlg.cpp \
