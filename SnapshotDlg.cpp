@@ -161,13 +161,23 @@ bool CSnapshotDlg::OnEventCapturing(EventCapturing* pEvt)
 	if (nOperateBarX < rcWnd.left)
 		nOperateBarX = rcWnd.left;
 
+	//modify by yangjinpeng 2018-07-23	优化AttrBar的位置
+	//begin
 	int nOperateBarY = 0;	
-	if ((rcWnd.bottom - rcCap.bottom - 2) > rcOperateBar.Height())			// bottom
+	if ((rcWnd.bottom - rcCap.bottom - 2 - 55) > rcOperateBar.Height())
 		nOperateBarY = rcCap.bottom + 2;
-	else if ((rcCap.top - rcWnd.top - 2) > rcOperateBar.Height())				// top  有 空间
+	else if ((rcCap.top - rcWnd.top - 2) > rcOperateBar.Height())	
 		nOperateBarY = rcCap.top - rcOperateBar.Height() - 2;
-	else // 右上角 内 显示
+	else
 		nOperateBarY = rcCap.top + 2;
+
+// 	if ((rcWnd.bottom - rcCap.bottom - 2) > rcOperateBar.Height())			// bottom
+// 		nOperateBarY = rcCap.bottom + 2;
+// 	else if ((rcCap.top - rcWnd.top - 2) > rcOperateBar.Height())				// top  有 空间
+// 		nOperateBarY = rcCap.top - rcOperateBar.Height() - 2;
+// 	else // 右上角 内 显示
+// 		nOperateBarY = rcCap.top + 2;
+	//end
 
 	SStringW ssOperateBarPos;
 	ssOperateBarPos.Format(_T("%d,%d"), nOperateBarX, nOperateBarY);
@@ -210,13 +220,24 @@ bool CSnapshotDlg::OnEventRectMoving(EventRectMoving* pEvt)
 	if (nOperateBarX < rcWnd.left)
 		nOperateBarX = rcWnd.left;
 
+	//modify by yangjinpeng 2018-07-23	优化AttrBar的位置
+	//begin
 	int nOperateBarY = 0;	
-	if ((rcWnd.bottom - rcCap.bottom - 2) > rcOperateBar.Height())			// bottom
+	if ((rcWnd.bottom - rcCap.bottom - 2 - 55) > rcOperateBar.Height())
 		nOperateBarY = rcCap.bottom + 2;
-	else if ((rcCap.top - rcWnd.top - 2) > rcOperateBar.Height())				// top  有 空间
+	else if ((rcCap.top - rcWnd.top - 2) > rcOperateBar.Height())	
 		nOperateBarY = rcCap.top - rcOperateBar.Height() - 2;
-	else // 右上角 内 显示
+	else
 		nOperateBarY = rcCap.top + 2;
+
+// 	int nOperateBarY = 0;	
+// 	if ((rcWnd.bottom - rcCap.bottom - 2) > rcOperateBar.Height())			// bottom
+// 		nOperateBarY = rcCap.bottom + 2;
+// 	else if ((rcCap.top - rcWnd.top - 2) > rcOperateBar.Height())				// top  有 空间
+// 		nOperateBarY = rcCap.top - rcOperateBar.Height() - 2;
+// 	else // 右上角 内 显示
+// 		nOperateBarY = rcCap.top + 2;
+	//end
 
 	SStringW ssOperateBarPos;
 	ssOperateBarPos.Format(_T("%d,%d"), nOperateBarX, nOperateBarY);
@@ -305,17 +326,32 @@ void CSnapshotDlg::OnBnClickRect()
 		break;
 	}
 
-	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
-	int nOtherAttrY = rcOperateBar.bottom + 2;
-
-	SStringW ssOtherAttrPos;
-	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pAttrBar->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
-
+	//modify by yangjinpeng 2018-07-23	优化AttrBar的位置
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
+
+	SOUI::CRect rcWnd = GetWindowRect();
+	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
+	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
+	SOUI::CRect rcCap = pSnapshot->GetCapRect();
+
+	int nAttrBarX = rcOperateBar.right - rcAttrBar.Width();
+	int nAttrBarY;
+
+	if (rcOperateBar.bottom < rcCap.top)    //右上角
+	{
+		if ((rcOperateBar.top - 2 - rcAttrBar.Height()) > 0)
+			nAttrBarY = rcOperateBar.top - 2 - rcAttrBar.Height();
+		else
+			nAttrBarY = rcOperateBar.bottom + 2;
+	}
+	else
+		nAttrBarY = rcOperateBar.bottom + 2;
+
+	SStringW ssAttrBarPos;
+	ssAttrBarPos.Format(_T("%d,%d"), nAttrBarX, nAttrBarY);
+	pAttrBar->SetAttribute(L"pos", ssAttrBarPos, FALSE);
+
 	pSnapshot->SetOperateType(1);
 }
 
@@ -388,17 +424,31 @@ void CSnapshotDlg::OnBnClickEllipse()
 		break;
 	}
 
-	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
-	int nOtherAttrY = rcOperateBar.bottom + 2;
-
-	SStringW ssOtherAttrPos;
-	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pAttrBar->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
-
+	//modify by yangjinpeng 2018-07-23	优化AttrBar的位置
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
+
+	SOUI::CRect rcWnd = GetWindowRect();
+	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
+	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
+	SOUI::CRect rcCap = pSnapshot->GetCapRect();
+
+	int nAttrBarX = rcOperateBar.right - rcAttrBar.Width();
+	int nAttrBarY;
+
+	if (rcOperateBar.bottom < rcCap.top)    //右上角
+	{
+		if ((rcOperateBar.top - 2 - rcAttrBar.Height()) > 0)
+			nAttrBarY = rcOperateBar.top - 2 - rcAttrBar.Height();
+		else
+			nAttrBarY = rcOperateBar.bottom + 2;
+	}
+	else
+		nAttrBarY = rcOperateBar.bottom + 2;
+
+	SStringW ssAttrBarPos;
+	ssAttrBarPos.Format(_T("%d,%d"), nAttrBarX, nAttrBarY);
+	pAttrBar->SetAttribute(L"pos", ssAttrBarPos, FALSE);
 	pSnapshot->SetOperateType(2);
 }
 
@@ -471,17 +521,31 @@ void CSnapshotDlg::OnBnClickArrow()
 		break;
 	}
 
-	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
-	int nOtherAttrY = rcOperateBar.bottom + 2;
-
-	SStringW ssOtherAttrPos;
-	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pAttrBar->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
-
+	//modify by yangjinpeng 2018-07-23	优化AttrBar的位置
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
+
+	SOUI::CRect rcWnd = GetWindowRect();
+	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
+	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
+	SOUI::CRect rcCap = pSnapshot->GetCapRect();
+
+	int nAttrBarX = rcOperateBar.right - rcAttrBar.Width();
+	int nAttrBarY;
+
+	if (rcOperateBar.bottom < rcCap.top)    //右上角
+	{
+		if ((rcOperateBar.top - 2 - rcAttrBar.Height()) > 0)
+			nAttrBarY = rcOperateBar.top - 2 - rcAttrBar.Height();
+		else
+			nAttrBarY = rcOperateBar.bottom + 2;
+	}
+	else
+		nAttrBarY = rcOperateBar.bottom + 2;
+
+	SStringW ssAttrBarPos;
+	ssAttrBarPos.Format(_T("%d,%d"), nAttrBarX, nAttrBarY);
+	pAttrBar->SetAttribute(L"pos", ssAttrBarPos, FALSE);
 	pSnapshot->SetOperateType(3);
 }
 
@@ -554,17 +618,31 @@ void CSnapshotDlg::OnBnClickDoodle()
 		break;
 	}
 
-	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
-	int nOtherAttrY = rcOperateBar.bottom + 2;
-
-	SStringW ssOtherAttrPos;
-	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pAttrBar->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
-
+	//modify by yangjinpeng 2018-07-23	优化AttrBar的位置
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
+
+	SOUI::CRect rcWnd = GetWindowRect();
+	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
+	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
+	SOUI::CRect rcCap = pSnapshot->GetCapRect();
+
+	int nAttrBarX = rcOperateBar.right - rcAttrBar.Width();
+	int nAttrBarY;
+
+	if (rcOperateBar.bottom < rcCap.top)    //右上角
+	{
+		if ((rcOperateBar.top - 2 - rcAttrBar.Height()) > 0)
+			nAttrBarY = rcOperateBar.top - 2 - rcAttrBar.Height();
+		else
+			nAttrBarY = rcOperateBar.bottom + 2;
+	}
+	else
+		nAttrBarY = rcOperateBar.bottom + 2;
+
+	SStringW ssAttrBarPos;
+	ssAttrBarPos.Format(_T("%d,%d"), nAttrBarX, nAttrBarY);
+	pAttrBar->SetAttribute(L"pos", ssAttrBarPos, FALSE);
 	pSnapshot->SetOperateType(4);
 }
 
@@ -637,17 +715,31 @@ void CSnapshotDlg::OnBnClickMask()
 		break;
 	}
 
-	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
-	int nOtherAttrY = rcOperateBar.bottom + 2;
-
-	SStringW ssOtherAttrPos;
-	ssOtherAttrPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pAttrBar->SetAttribute(L"pos", ssOtherAttrPos, FALSE);
-
+	//modify by yangjinpeng 2018-07-23	优化AttrBar的位置
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
+
+	SOUI::CRect rcWnd = GetWindowRect();
+	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
+	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
+	SOUI::CRect rcCap = pSnapshot->GetCapRect();
+
+	int nAttrBarX = rcOperateBar.right - rcAttrBar.Width();
+	int nAttrBarY;
+
+	if (rcOperateBar.bottom < rcCap.top)    //右上角
+	{
+		if ((rcOperateBar.top - 2 - rcAttrBar.Height()) > 0)
+			nAttrBarY = rcOperateBar.top - 2 - rcAttrBar.Height();
+		else
+			nAttrBarY = rcOperateBar.bottom + 2;
+	}
+	else
+		nAttrBarY = rcOperateBar.bottom + 2;
+
+	SStringW ssAttrBarPos;
+	ssAttrBarPos.Format(_T("%d,%d"), nAttrBarX, nAttrBarY);
+	pAttrBar->SetAttribute(L"pos", ssAttrBarPos, FALSE);
 	pSnapshot->SetOperateType(5);
 }
 
@@ -676,14 +768,31 @@ void CSnapshotDlg::OnBnClickWord()
 	if (!pWordAttr->IsVisible())
 		pWordAttr->SetVisible(TRUE, FALSE);
 
+	//modify by yangjinpeng 2018-07-23	优化AttrBar的位置
+	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
+	SASSERT(pSnapshot);
+
+	SOUI::CRect rcWnd = GetWindowRect();
 	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
 	SOUI::CRect rcAttrBar = pAttrBar->GetWindowRect();
-	int nOtherAttrX = rcOperateBar.right - rcAttrBar.Width();
-	int nOtherAttrY = rcOperateBar.bottom + 2;
+	SOUI::CRect rcCap = pSnapshot->GetCapRect();
 
-	SStringW sstrAttrBarPos;
-	sstrAttrBarPos.Format(_T("%d,%d"), nOtherAttrX, nOtherAttrY);
-	pAttrBar->SetAttribute(L"pos", sstrAttrBarPos, FALSE);
+	int nAttrBarX = rcOperateBar.right - rcAttrBar.Width();
+	int nAttrBarY;
+
+	if (rcOperateBar.bottom < rcCap.top)    //右上角
+	{
+		if ((rcOperateBar.top - 2 - rcAttrBar.Height()) > 0)
+			nAttrBarY = rcOperateBar.top - 2 - rcAttrBar.Height();
+		else
+			nAttrBarY = rcOperateBar.bottom + 2;
+	}
+	else
+		nAttrBarY = rcOperateBar.bottom + 2;
+
+	SStringW ssAttrBarPos;
+	ssAttrBarPos.Format(_T("%d,%d"), nAttrBarX, nAttrBarY);
+	pAttrBar->SetAttribute(L"pos", ssAttrBarPos, FALSE);
 
 	SASSERT(pImgBtnRect);
 	SASSERT(pImgBtnEllipse);
@@ -699,8 +808,6 @@ void CSnapshotDlg::OnBnClickWord()
 	pImgBtnMask->SetCheck(FALSE);
 	pImgBtnWord->SetCheck(TRUE);
 
-	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
-	SASSERT(pSnapshot);
 	pSnapshot->SetOperateType(6);
 	
 }
