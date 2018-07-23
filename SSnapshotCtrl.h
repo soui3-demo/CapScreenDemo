@@ -6,8 +6,8 @@ class EventCapturing : public TplEventArgs<EventCapturing>
 	SOUI_CLASS_NAME(EventCapturing, L"on_capturing")
 public:
 	EventCapturing(SObject *pSender)
-		: TplEventArgs<EventCapturing>(pSender){}
-	enum { EventID = EVT_EXTERNAL_BEGIN + 51};
+		: TplEventArgs<EventCapturing>(pSender) {}
+	enum { EventID = EVT_EXTERNAL_BEGIN + 51 };
 	SOUI::CPoint pt;
 };
 
@@ -16,7 +16,7 @@ class EventRectMoving : public TplEventArgs<EventRectMoving>
 	SOUI_CLASS_NAME(EventRectMoving, L"on_rectmoving")
 public:
 	EventRectMoving(SObject *pSender)
-		: TplEventArgs<EventRectMoving>(pSender){}
+		: TplEventArgs<EventRectMoving>(pSender) {}
 	enum { EventID = EVT_EXTERNAL_BEGIN + 52 };
 	SOUI::CPoint pt;
 };
@@ -26,8 +26,8 @@ class EventRectCaptured : public TplEventArgs<EventRectCaptured>
 	SOUI_CLASS_NAME(EventRectCaptured, L"on_rectcaptured")
 public:
 	EventRectCaptured(SObject *pSender)
-		: TplEventArgs<EventRectCaptured>(pSender){}
-	enum { EventID = EVT_EXTERNAL_BEGIN + 53};
+		: TplEventArgs<EventRectCaptured>(pSender) {}
+	enum { EventID = EVT_EXTERNAL_BEGIN + 53 };
 	SOUI::CPoint pt;
 };
 
@@ -36,8 +36,8 @@ class EventRectDbClk : public TplEventArgs<EventRectDbClk>
 	SOUI_CLASS_NAME(EventRectDbClk, L"on_recvdbclk")
 public:
 	EventRectDbClk(SObject* pSender)
-		: TplEventArgs<EventRectDbClk>(pSender){}
-	enum {EventID = EVT_EXTERNAL_BEGIN + 54};
+		: TplEventArgs<EventRectDbClk>(pSender) {}
+	enum { EventID = EVT_EXTERNAL_BEGIN + 54 };
 };
 
 class SSnapshotCtrl : public SWindow
@@ -70,11 +70,8 @@ public:
 	void SetOperateType(int nOperateType = -1);
 	void SetPenColor(const COLORREF& color);
 	void SetPenSize(int nPenSize = 1);
-	void SetFontSize(int size)
-	{
-		m_FontSize = size;
-	}
-	SOUI::CRect GetCapRect(){return m_rcCapture;}
+	void SetFontSize(int size);
+	SOUI::CRect GetCapRect() { return m_rcCapture; }
 	//增加一个方法来获取edit可以使用的最大大小
 	int GetEtMaxWid(CRect &etRc)
 	{
@@ -84,13 +81,13 @@ public:
 	{
 		return m_rcCapture.bottom - etRc.top;
 	}
-	void GetEtMovePos(CPoint &etPos,int etWid,int etHei)
+	void GetEtMovePos(CPoint &etPos, int etWid, int etHei)
 	{
 		if (etPos.x > m_rcCapture.right - etWid)
 		{
 			etPos.x = m_rcCapture.right - etWid;
 		}
-		else if(etPos.x < m_rcCapture.left)
+		else if (etPos.x < m_rcCapture.left)
 		{
 			etPos.x = m_rcCapture.left;
 		}
@@ -98,7 +95,7 @@ public:
 		{
 			etPos.y = m_rcCapture.bottom - etHei;
 		}
-		else if (etPos.y< m_rcCapture.top)
+		else if (etPos.y < m_rcCapture.top)
 		{
 			etPos.y = m_rcCapture.top;
 		}
@@ -123,7 +120,7 @@ private:
 	EcPosType HitPos(SOUI::CPoint& pt);
 	void ShowCursor(EcPosType ePos);
 	HBITMAP CopyCurBitmap(int nx, int ny, int nWidth, int nHeight);
-	
+
 
 	void DrawRectangle(IRenderTarget *pRT, const SOUI::CRect& rcRectangle);
 	void DrawEllipse(IRenderTarget* pRT, const SOUI::CRect& rcEllipse);
@@ -139,43 +136,43 @@ protected:
 		MSG_WM_LBUTTONUP(OnLButtonUp)
 		MSG_WM_LBUTTONDBLCLK(OnLButtonDblClk)
 		MSG_WM_MOUSEMOVE(OnMouseMove)
-		
-	SOUI_MSG_MAP_END()
+
+		SOUI_MSG_MAP_END()
 
 private:
-	 CBitmap*					m_pBitmap;
-	 //Gdiplus::Image*			m_pImgMask;
-	 //Image*					m_pBrushMask;
-	 Gdiplus::Bitmap*			m_MaskBitmap;
-	 int						m_nScreenX, m_nScreenY;
-	 std::vector<CBitmap*>		m_vecBitmap;
+	CBitmap * m_pBitmap;
+	//Gdiplus::Image*			m_pImgMask;
+	//Image*					m_pBrushMask;
+	Gdiplus::Bitmap*			m_MaskBitmap;
+	int						m_nScreenX, m_nScreenY;
+	std::vector<CBitmap*>		m_vecBitmap;
 
-	 SOUI::CPoint				m_ptDown;			//鼠标按下的位置
-	 SOUI::CPoint				m_pt;
-	 std::vector<SOUI::CPoint>	m_vecDoodlePoints;
-	 std::vector<SOUI::CPoint>	m_vecMaskPoints;
+	SOUI::CPoint				m_ptDown;			//鼠标按下的位置
+	SOUI::CPoint				m_pt;
+	std::vector<SOUI::CPoint>	m_vecDoodlePoints;
+	std::vector<SOUI::CPoint>	m_vecMaskPoints;
 
-	 bool	m_bSelected;
-	 bool						m_bSelectOperate;
+	bool	m_bSelected;
+	bool						m_bSelectOperate;
 
-	 SOUI::CRect				m_rcCapture;
+	SOUI::CRect				m_rcCapture;
 
-	 HCURSOR					m_hCurSelect;
-	 HCURSOR					m_hCurLeft, m_hCurRight, m_hCurTop, m_hCurBottom,
-								m_hCurTopLeft, m_hCurTopRight, m_hCurBottomLeft, m_hCurBottomRight,
-								m_hCurHand, m_hCurArrow;
+	HCURSOR					m_hCurSelect;
+	HCURSOR					m_hCurLeft, m_hCurRight, m_hCurTop, m_hCurBottom,
+		m_hCurTopLeft, m_hCurTopRight, m_hCurBottomLeft, m_hCurBottomRight,
+		m_hCurHand, m_hCurArrow;
 
-	 SOUI::CRect	m_rcPos[8];
-	 COLORREF		m_crBorder;
-	 EcPosType		m_eDraging;
+	SOUI::CRect	m_rcPos[8];
+	COLORREF		m_crBorder;
+	EcPosType		m_eDraging;
 
-	 int			m_nOperateType;
-	 int			m_nPenSize;
-	 COLORREF		m_crPen;
-	 bool			m_bDrawOperate;
-	 SOUI::CRect	m_rcRectangle;
-	 SOUI::CRect	m_rcEllipse;
-	 CPoint			m_clickPoint;
-	 BOOL			m_ClickTwo;
-	 int			m_FontSize;
+	int			m_nOperateType;
+	int			m_nPenSize;
+	COLORREF		m_crPen;
+	bool			m_bDrawOperate;
+	SOUI::CRect	m_rcRectangle;
+	SOUI::CRect	m_rcEllipse;
+	CPoint			m_clickPoint;
+	BOOL			m_ClickTwo;
+	int			m_FontSize;
 };

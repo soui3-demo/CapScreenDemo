@@ -745,11 +745,29 @@ void SSnapshotCtrl::SetOperateType(int nOperateType /* = -1 */)
 void SSnapshotCtrl::SetPenColor(const COLORREF& color)
 {
 	m_crPen = color;
+	if (m_nOperateType == 6)
+	{
+		SWindow *pFouceWnd = SWindowMgr::GetWindow(this->GetContainer()->GetFocus());
+		if (pFouceWnd&&pFouceWnd->IsClass(L"et9527"))
+		{
+			((CEdit9527*)pFouceWnd)->SetTextColor(m_crPen);
+		}
+	}
 }
 
 void SSnapshotCtrl::SetPenSize(int nPenSize /* = 1 */)
 {
-	m_nPenSize = nPenSize;
+	m_nPenSize = nPenSize;	
+}
+
+void SSnapshotCtrl::SetFontSize(int size)
+{
+	m_FontSize = size;
+	SWindow *pFouceWnd = SWindowMgr::GetWindow(this->GetContainer()->GetFocus());
+	if (pFouceWnd&&pFouceWnd->IsClass(L"et9527"))
+	{
+		((CEdit9527*)pFouceWnd)->SetFontSize(m_FontSize);
+	}
 }
 
 void SSnapshotCtrl::RevokeOperate()

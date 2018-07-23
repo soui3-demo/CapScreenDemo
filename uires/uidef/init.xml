@@ -13,7 +13,8 @@
   </style>
 
   <objattr>
-    <imgbtn focusable="1" drawFocusRect="0"/>
-    <et9527 width="60" height="30" rich="1" sbWid="0" valign="top" font="size:18,face:微软雅黑" colorText="#ff00000" multiLines="1" hscrollBar="1" allowBeep="1" maxBuf="108" autoSel="0" vscrollBar="1" margin="3,3,3,3"/>
+    <!--不让IMGBTN得到焦点，以便获取选中项是不是文本，以动态改变-->
+    <imgbtn focusable="0" drawFocusRect="0"/>
+    <et9527 width="60" height="30" rich="1" sbWid="0" valign="top" font="size:18,face:微软雅黑" colorText="#ff00000" multiLines="1" hscrollBar="1" allowBeep="1" maxBuf="108" autoSel="0" vscrollBar="1" margin="3,3,3,3"/>    
   </objattr>
 </UIDEF>
