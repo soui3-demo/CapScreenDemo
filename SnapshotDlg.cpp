@@ -809,7 +809,6 @@ void CSnapshotDlg::OnBnClickWord()
 	pImgBtnWord->SetCheck(TRUE);
 
 	pSnapshot->SetOperateType(6);
-	
 }
 
 void CSnapshotDlg::OnBnClickRevoke()

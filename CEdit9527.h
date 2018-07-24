@@ -12,7 +12,7 @@ namespace SOUI
 		void SetFontSize(int size)
 		{
 			IFontPtr font=m_style.GetTextFont(0);
-			if (abs(font->TextSize()) != size)
+			//if (abs(font->TextSize()) != size)	//modify by yangjinpeng  2018-07-24
 			{
 				SStringT strDesc;
 				strDesc.Format(_T("face:%s,size:%d"), font->FamilyName(),size);
