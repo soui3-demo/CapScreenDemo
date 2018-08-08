@@ -11,6 +11,7 @@ namespace SOUI
 	CEdit9527::~CEdit9527()
 	{
 	}
+
 	void CEdit9527::PaintToDC(HDC hdc)
 	{
 		CRect rcClient;
@@ -33,16 +34,38 @@ namespace SOUI
 		::SetGraphicsMode(hdc, nOldMode);
 	}
 
+	void CEdit9527::SetFontSize(int size)
+	{
+		IFontPtr font = m_style.GetTextFont(0);
+		if (abs(font->TextSize()) != size)
+		{
+			SStringT strDesc;
+			strDesc.Format(_T("face:%s,size:%d"), font->FamilyName(), size);
+			this->SetAttribute(L"font", strDesc);
+			IFontPtr pFont = m_style.GetTextFont(0);
+			if (SUCCEEDED(InitDefaultCharFormat(&m_cfDef, pFont)))
+			{
+				m_pTxtHost->GetTextService()->OnTxPropertyBitsChange(TXTBIT_CHARFORMATCHANGE,
+					TXTBIT_CHARFORMATCHANGE);
+			}
+		}
+	}
+
+	void CEdit9527::SetTextColor(COLORREF color)
+	{
+		m_style.SetTextColor(0, color);
+		SetDefaultTextColor(m_style.GetTextColor(0));
+	}
+
 	LRESULT CEdit9527::OnCreate(LPVOID)
 	{
 		LRESULT bRet = __super::OnCreate(NULL);
 		if (bRet == 0)
 		{
-			SSendMessage(EM_SETEVENTMASK, 0, ENM_REQUESTRESIZE);//ENM_CHANGE
+			unsigned oldMask= SSendMessage(EM_GETEVENTMASK, 0, 0);
+			SSendMessage(EM_SETEVENTMASK, 0, oldMask| ENM_REQUESTRESIZE | ENM_CHANGE);
 			GetEventSet()->subscribeEvent(EVT_RE_NOTIFY, Subscriber(&CEdit9527::OnEditNotify, this));
-			
 			GetEventSet()->subscribeEvent(EVT_KILLFOCUS, Subscriber(&CEdit9527::OnKillFocus, this));
-
 		}
 		return bRet;
 	}
@@ -63,16 +86,23 @@ namespace SOUI
 
 	bool CEdit9527::OnEditNotify(EventArgs * e)
 	{
+		static bool bChanged=false;
 		EventRENotify *pEvtNotify = sobj_cast<EventRENotify>(e);
 		switch (pEvtNotify->iNotify)
-		{
-		case EN_CHANGE:;//ENM_REQUESTRESIZE时将不会更新滚动条信息
+		{			
+		case EN_CHANGE:
+			bChanged = true;
+			SSendMessage(EM_REQUESTRESIZE, 0, 0);
 			break;
 		case EN_REQUESTRESIZE:
-			REQRESIZE * prqs = (REQRESIZE *)(pEvtNotify->pv);
-			m_iHei = prqs->rc.bottom - prqs->rc.top;
-			m_iWid = prqs->rc.right - prqs->rc.left;
-			UpdataSize2();
+			if (bChanged)
+			{
+				REQRESIZE * prqs = (REQRESIZE *)(pEvtNotify->pv);
+				m_iHei = prqs->rc.bottom - prqs->rc.top;
+				m_iWid = prqs->rc.right - prqs->rc.left;
+				UpdataSize2();
+				bChanged = false;
+			}
 			break;
 		}
 		return true;
@@ -112,14 +142,14 @@ namespace SOUI
 
 	void CEdit9527::UpdataSize2()
 	{
-		CRect rcWnd = GetWindowRect();
+		CRect rcWnd = GetWindowRect();		
 		//增大
-		if (rcWnd.Width() < m_iWid + 10)
+		if (rcWnd.Width() < m_iWid + 30)
 		{
 			int max_wid = ((SSnapshotCtrl*)GetParent())->GetEtMaxWid(rcWnd);
 			int iMax;
 			SStringT width;
-			iMax = max(m_iWid + 10, 60);
+			iMax = max(m_iWid +30, 60);
 			iMax = min(max_wid, iMax);
 			width.Format(L"%d", iMax);
 			SetAttribute(L"width", width);
@@ -130,30 +160,31 @@ namespace SOUI
 		{
 			SStringT width;
 			int iMax;
-			iMax = max(m_iWid + 10, 60);
+			iMax = max(m_iWid + 30, 60);
 			width.Format(L"%d", iMax);
 			SetAttribute(L"width", width);
-			SSendMessage(EM_SETTARGETDEVICE, 0,1);
+			SSendMessage(EM_SETTARGETDEVICE, 0, 1);
 		}
 
-		if (rcWnd.Height() < m_iHei + 10)
+		if (rcWnd.Height() < m_iHei + 30)
 		{
 			int max_wid = ((SSnapshotCtrl*)GetParent())->GetEtMaxHei(rcWnd);
 			int iMax;
 			SStringT height;
-			iMax = max(m_iHei + 10, 30);
+			iMax = max(m_iHei + 30, 60);
 			iMax = min(max_wid, iMax);
 			height.Format(L"%d", iMax);
-			SetAttribute(L"height", height);			
+			SetAttribute(L"height", height);
 		}
 		else
 		{
 			SStringT height;
 			int iMax;			
-			iMax = max(m_iHei + 10, 30);
+			iMax = max(m_iHei + 30, 60);
 			height.Format(L"%d", iMax);
 			SetAttribute(L"height", height);
 		}
+
 	}
 
 	void CEdit9527::UpdataSize()

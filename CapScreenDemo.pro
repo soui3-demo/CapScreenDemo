@@ -31,13 +31,16 @@ HEADERS += CBitmap.h \
 	CEdit9527.h \
 	WordSizeAdapter.h \
 	IWordSizeAdapterCallback.h\
-	CPixelateGrid.h
+	CPixelateGrid.h\
+	CWindowEnumer.h
+
 
 SOURCES += CapScreenDemo.cpp \
 	MainDlg.cpp \
 	SnapshotDlg.cpp \	
 	SSnapshotCtrl.cpp \
-	CEdit9527.cpp
+	CEdit9527.cpp\
+	CWindowEnumer.cpp
 
 RC_FILE += CapScreenDemo.rc
 RC_INCLUDEPATH+=$(SOUIPATH)/soui-sys-resource

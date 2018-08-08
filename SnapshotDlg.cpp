@@ -35,7 +35,11 @@ CSnapshotDlg::~CSnapshotDlg(void)
 {
 }
 //定义一个宏方便调试
+#ifdef _DEBUG
 #define MDEBUG
+#endif // _DEBUG
+
+
 
 BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
 {
@@ -48,14 +52,12 @@ BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
  	nxScreen = dm.dmPelsWidth;
  	nyScreen = dm.dmPelsHeight;
 #else
-	nxScreen = 600;
-	nyScreen = 400;
+	nxScreen = 800;
+	nyScreen = 800;
 #endif // !MDEBUG
-
 
 	::SetWindowPos(this->m_hWnd, HWND_TOPMOST, 0,0, nxScreen, nyScreen, SWP_SHOWWINDOW);
 	SetForegroundWindow(this->m_hWnd);
-
 	SOUI::CRect rc(0,0, nxScreen, nyScreen);
 	CDC       hScrDC, hMemDC; 
 	HBITMAP   hBitmap, hOldBitmap; 
@@ -81,7 +83,6 @@ BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
 	hOldBitmap = (HBITMAP)SelectObject(hMemDC, hBitmap);
 	BitBlt(hMemDC, 0, 0, nWidth, nHeight, hScrDC, nX, nY, SRCCOPY);
 	hBitmap = (HBITMAP)SelectObject(hMemDC, hOldBitmap);
-
 
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
 	SASSERT(pSnapshot);
