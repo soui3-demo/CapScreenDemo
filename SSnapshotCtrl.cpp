@@ -316,7 +316,7 @@ void SSnapshotCtrl::OnMouseMove(UINT nFlags, SOUI::CPoint point)
 			else
 			{
 				m_rcCapture.CopyRect(CWindowEnumer::GetPointInRect(point));
-
+				m_rcCapture.IntersectRect(m_rcCapture, GetWindowRect());
 				if (!m_rcCapture.IsRectEmpty())
 				{
 					Invalidate();

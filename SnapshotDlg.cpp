@@ -53,7 +53,7 @@ BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
  	nyScreen = dm.dmPelsHeight;
 #else
 	nxScreen = 800;
-	nyScreen = 800;
+	nyScreen = 1080;
 #endif // !MDEBUG
 
 	::SetWindowPos(this->m_hWnd, HWND_TOPMOST, 0,0, nxScreen, nyScreen, SWP_SHOWWINDOW);
@@ -165,20 +165,12 @@ bool CSnapshotDlg::OnEventCapturing(EventCapturing* pEvt)
 	//modify by yangjinpeng 2018-07-23	优化AttrBar的位置
 	//begin
 	int nOperateBarY = 0;	
-	if ((rcWnd.bottom - rcCap.bottom - 2 - 55) > rcOperateBar.Height())
+	if ((rcWnd.bottom - rcCap.bottom - 2) > rcOperateBar.Height())
 		nOperateBarY = rcCap.bottom + 2;
 	else if ((rcCap.top - rcWnd.top - 2) > rcOperateBar.Height())	
 		nOperateBarY = rcCap.top - rcOperateBar.Height() - 2;
 	else
 		nOperateBarY = rcCap.top + 2;
-
-// 	if ((rcWnd.bottom - rcCap.bottom - 2) > rcOperateBar.Height())			// bottom
-// 		nOperateBarY = rcCap.bottom + 2;
-// 	else if ((rcCap.top - rcWnd.top - 2) > rcOperateBar.Height())				// top  有 空间
-// 		nOperateBarY = rcCap.top - rcOperateBar.Height() - 2;
-// 	else // 右上角 内 显示
-// 		nOperateBarY = rcCap.top + 2;
-	//end
 
 	SStringW ssOperateBarPos;
 	ssOperateBarPos.Format(_T("%d,%d"), nOperateBarX, nOperateBarY);
