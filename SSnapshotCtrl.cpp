@@ -247,7 +247,9 @@ void SSnapshotCtrl::OnLButtonUp(UINT nFlags, SOUI::CPoint point)
 			this->InsertChild(pET);
 			pET->SSendMessage(WM_CREATE);
 			SStringT etPos;
-			etPos.Format(_T("%d,%d"), m_clickPoint.x, m_clickPoint.y);
+			CPoint etPt = m_clickPoint;
+			GetEtMovePos(etPt, 60, 60);
+			etPos.Format(_T("%d,%d"), etPt.x, etPt.y);
 			pET->SetAttribute(L"pos", etPos);
 			pET->SetFocus();
 			pET->SetTextColor(m_crPen);

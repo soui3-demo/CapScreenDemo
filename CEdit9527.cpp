@@ -4,7 +4,7 @@
 
 namespace SOUI
 {
-	CEdit9527::CEdit9527() :m_bDraging(FALSE), m_iHei(0),m_iWid(0)
+	CEdit9527::CEdit9527() :m_bDraging(FALSE), m_iHei(0),m_iWid(0), bChanged(false)
 	{
 	}
 
@@ -85,13 +85,13 @@ namespace SOUI
 	}
 
 	bool CEdit9527::OnEditNotify(EventArgs * e)
-	{
-		static bool bChanged=false;
+	{		
 		EventRENotify *pEvtNotify = sobj_cast<EventRENotify>(e);
 		switch (pEvtNotify->iNotify)
 		{			
 		case EN_CHANGE:
 			bChanged = true;
+			SSendMessage(EM_SETTARGETDEVICE, 0, 1);
 			SSendMessage(EM_REQUESTRESIZE, 0, 0);
 			break;
 		case EN_REQUESTRESIZE:
@@ -100,7 +100,11 @@ namespace SOUI
 				REQRESIZE * prqs = (REQRESIZE *)(pEvtNotify->pv);
 				m_iHei = prqs->rc.bottom - prqs->rc.top;
 				m_iWid = prqs->rc.right - prqs->rc.left;
-				UpdataSize2();
+
+				CRect Margin=GetStyle().GetMargin();
+				m_iWid += Margin.left + Margin.right;
+				m_iHei+= Margin.top + Margin.bottom;
+				UpdataSize();
 				bChanged = false;
 			}
 			break;
@@ -132,40 +136,34 @@ namespace SOUI
 		{
 			CRect rcWnd = GetWindowRect();
 			CPoint pt = rcWnd.TopLeft() + (point - m_ptClick);
-			((SSnapshotCtrl*)GetParent())->GetEtMovePos(pt, rcWnd.Width(),rcWnd.Height());
-			rcWnd.MoveToXY(pt);
-			Move(rcWnd);
+			//((SSnapshotCtrl*)GetParent())->GetEtMovePos(pt, rcWnd.Width(),rcWnd.Height());
+			((SSnapshotCtrl*)GetParent())->GetEtMovePos(pt, 60, 60);
+			//rcWnd.MoveToXY(pt);			
+			//Move(rcWnd);
+			SStringT pos;
+			pos.Format(L"%d,%d", pt.x, pt.y);
+			SetAttribute(L"pos", pos);
+			int max_wid = ((SSnapshotCtrl*)GetParent())->GetEtMaxWid(pt.x);
+			if (max_wid<rcWnd.Width())
+			{
+				SStringT width;
+				width.Format(L"%d", max_wid);
+				SetAttribute(L"width", width);
+				//强制更新自己的m_rcWindow;
+				GetLayout()->LayoutChildren(GetParent());
+			}
+			SSendMessage(EM_SETTARGETDEVICE, 0, 1);
+			bChanged = true;
+			SSendMessage(EM_REQUESTRESIZE, 0, 0);
+
 			m_ptClick = point;
 			GetParent()->Invalidate();
 		}
 	}
 
-	void CEdit9527::UpdataSize2()
+	void CEdit9527::UpdataSize()
 	{
-		CRect rcWnd = GetWindowRect();		
-		//增大
-		if (rcWnd.Width() < m_iWid + 30)
-		{
-			int max_wid = ((SSnapshotCtrl*)GetParent())->GetEtMaxWid(rcWnd);
-			int iMax;
-			SStringT width;
-			iMax = max(m_iWid +30, 60);
-			iMax = min(max_wid, iMax);
-			width.Format(L"%d", iMax);
-			SetAttribute(L"width", width);
-			if (iMax == max_wid)
-				SSendMessage(EM_SETTARGETDEVICE, 0, 0);
-		}
-		else
-		{
-			SStringT width;
-			int iMax;
-			iMax = max(m_iWid + 30, 60);
-			width.Format(L"%d", iMax);
-			SetAttribute(L"width", width);
-			SSendMessage(EM_SETTARGETDEVICE, 0, 1);
-		}
-
+		CRect rcWnd = GetWindowRect();
 		if (rcWnd.Height() < m_iHei + 30)
 		{
 			int max_wid = ((SSnapshotCtrl*)GetParent())->GetEtMaxHei(rcWnd);
@@ -179,54 +177,39 @@ namespace SOUI
 		else
 		{
 			SStringT height;
-			int iMax;			
+			int iMax;
 			iMax = max(m_iHei + 30, 60);
 			height.Format(L"%d", iMax);
 			SetAttribute(L"height", height);
-		}
-
-	}
-
-	void CEdit9527::UpdataSize()
-	{		
-		if (HasScrollBar(FALSE))//if(false)
+		}	
+		//增大
+		if (rcWnd.Width() < m_iWid + 30)
 		{
-			int iMin, iMax;
-			GetScrollRange(FALSE, &iMin, &iMax);
+			int max_wid = ((SSnapshotCtrl*)GetParent())->GetEtMaxWid(rcWnd);
+			int iMax;
 			SStringT width;
-			iMax = max(iMax + 16, 60);
-			int max_wid = ((SSnapshotCtrl*)GetParent())->GetEtMaxWid(GetWindowRect());
+			iMax = max(m_iWid +30, 60);
 			iMax = min(max_wid, iMax);
 			width.Format(L"%d", iMax);
 			SetAttribute(L"width", width);
 			if (iMax == max_wid)
+			{
+				//强制更新自己的m_rcWindow;
+				GetLayout()->LayoutChildren(GetParent());
 				SSendMessage(EM_SETTARGETDEVICE, 0, 0);
+			}
 		}
 		else
 		{
 			SStringT width;
-			width.Format(L"%d", m_iWid+20);
-			//SetAttribute(L"width", width);
-		}
-		if (HasScrollBar(TRUE))
-		{
-
-			int iMin, iMax;
-			GetScrollRange(TRUE, &iMin, &iMax);
-			SStringT height;
-			iMax = max(iMax + 16, 30);
-			int max_hei = ((SSnapshotCtrl*)GetParent())->GetEtMaxHei(GetWindowRect());
-			iMax = min(max_hei, iMax);
-			height.Format(L"%d", iMax);			
-			SetAttribute(L"height", height);
-		}
-		else
-		{
-			SStringT height;
-			height.Format(L"%d", m_iHei+10);
-			//SetAttribute(L"height", height);
+			int iMax;
+			iMax = max(m_iWid + 30, 60);
+			width.Format(L"%d", iMax);
+			SetAttribute(L"width", width);
+			SSendMessage(EM_SETTARGETDEVICE, 0, 1);
 		}
 	}
+	
 
 	void CEdit9527::OnNcLButtonUp(UINT nHitTest, CPoint point)
 	{
@@ -237,10 +220,13 @@ namespace SOUI
 		CPoint relpos = rcWnd.TopLeft() - parentRc.TopLeft();
 		SStringT pos;
 		pos.Format(L"%d,%d", relpos.x, relpos.y);
-		SetAttribute(L"pos", pos);
+		SetAttribute(L"pos", pos);	
+		
+		//Move(NULL);
 		SSendMessage(EM_SETTARGETDEVICE, 0, 1);
-		Move(NULL);
-		UpdataSize2();
+		
+		bChanged = true;
+		SSendMessage(EM_REQUESTRESIZE, 0, 0);
 	}
 
 	void CEdit9527::OnNcPaint(IRenderTarget * pRT)

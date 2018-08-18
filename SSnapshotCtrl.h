@@ -77,6 +77,10 @@ public:
 	{
 		return m_rcCapture.right - etRc.left;
 	}
+	int GetEtMaxWid(int etLeft)
+	{
+		return m_rcCapture.right - etLeft;
+	}
 	int GetEtMaxHei(CRect &etRc)
 	{
 		return m_rcCapture.bottom - etRc.top;
