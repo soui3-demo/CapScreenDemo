@@ -1,5 +1,7 @@
 #pragma once
 #include <core/swnd.h>
+#include "CEdit9527.h"
+
 
 class EventCapturing : public TplEventArgs<EventCapturing>
 {
@@ -40,7 +42,7 @@ public:
 	enum { EventID = EVT_EXTERNAL_BEGIN + 54 };
 };
 
-class SSnapshotCtrl : public SWindow
+class SSnapshotCtrl : public SWindow,public IEditHost
 {
 	SOUI_CLASS_NAME(SSnapshotCtrl, L"SnapshotCtrl")
 public:
@@ -62,6 +64,9 @@ public:
 	};
 
 public:
+
+	virtual bool canProcessMsg();
+
 	void SetBmpResource(CBitmap* pBmp);
 	void SetScreenSize(int nScreenX, int nScreenY);
 	void SaveCapBmpToClipboard();

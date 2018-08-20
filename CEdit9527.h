@@ -1,5 +1,12 @@
 #pragma once
 
+
+
+struct IEditHost
+{
+	virtual bool canProcessMsg() = NULL;
+};
+
 namespace SOUI
 {
 	class CEdit9527 :public SRichEdit
@@ -8,9 +15,13 @@ namespace SOUI
 	public:
 		CEdit9527();
 		~CEdit9527();
+		void SetHost(IEditHost* _ieditHost);
+
 		void PaintToDC(HDC hdc);
 		void SetFontSize(int size);
 		void SetTextColor(COLORREF color);
+
+		virtual BOOL IsContainPoint(const POINT &pt, BOOL bClientOnly) const;
 	protected:
 		LRESULT OnCreate(LPVOID);
 		//void OnDestroy();
@@ -25,7 +36,7 @@ namespace SOUI
 		BOOL OnEraseBkgnd(IRenderTarget * pRT);
 		void OnMouseHover(WPARAM wParam, CPoint ptPos);
 		void OnMouseLeave();
-		SOUI_MSG_MAP_BEGIN()
+		SOUI_MSG_MAP_BEGIN()			
 			MSG_WM_CREATE(OnCreate)
 			MSG_WM_NCMOUSEMOVE(OnNcMouseMove)
 			MSG_WM_NCLBUTTONDOWN(OnNcLButtonDown)
@@ -41,5 +52,6 @@ namespace SOUI
 		CPoint  m_ptClick;
 		int m_iWid, m_iHei;
 		bool bChanged;
+		IEditHost *m_pHost;
 	};
 }

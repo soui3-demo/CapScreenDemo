@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "SSnapshotCtrl.h"
-#include "CEdit9527.h"
+
 #include "CPixelateGrid.h"
 #include "CWindowEnumer.h"
 
@@ -84,9 +84,9 @@ void SSnapshotCtrl::OnPaint(IRenderTarget *pRT)
 	if (!m_rcCapture.IsRectEmpty())
 	{
 		SOUI::CRect rcLine(m_rcCapture);
-		if(!m_bSelected)
-			rcLine.InflateRect(1,1);
-		
+		if (!m_bSelected)
+			rcLine.InflateRect(1, 1);
+
 		RectF rcBorder;
 		rcBorder.X = rcLine.left;
 		rcBorder.Y = rcLine.top;
@@ -95,7 +95,7 @@ void SSnapshotCtrl::OnPaint(IRenderTarget *pRT)
 
 		Gdiplus::Color color(GetRValue(m_crBorder), GetGValue(m_crBorder), GetBValue(m_crBorder));
 		Pen hPen(color);
-		m_bSelected ? hPen.SetWidth(5): hPen.SetWidth(1);
+		m_bSelected ? hPen.SetWidth(5) : hPen.SetWidth(1);
 		graph.DrawRectangle(&hPen, rcBorder);
 	}
 
@@ -176,7 +176,7 @@ void SSnapshotCtrl::OnLButtonDown(UINT nFlags, SOUI::CPoint point)
 	if (m_rcCapture.IsRectEmpty())
 		m_bSelected = true;
 
-	if (!m_bSelectOperate&&!m_bSelected)
+	if (!m_bSelectOperate && !m_bSelected)
 	{
 		m_eDraging = HitPos(point);
 		switch (m_eDraging)
@@ -226,11 +226,17 @@ void SSnapshotCtrl::OnLButtonDown(UINT nFlags, SOUI::CPoint point)
 
 void SSnapshotCtrl::OnLButtonUp(UINT nFlags, SOUI::CPoint point)
 {
-	m_bSelected = false;
+	ReleaseCapture();
+	if (m_bSelected)
+	{
+		m_bSelected = false;
+		EventRectCaptured evt(this);
+		evt.pt = point;
+		FireEvent(evt);
+	}
+
 	m_eDraging = EcPosType::Null;
 	CalcPos();
-	Invalidate();
-	ReleaseCapture();
 
 	if (m_nOperateType == 6)
 	{
@@ -243,8 +249,12 @@ void SSnapshotCtrl::OnLButtonUp(UINT nFlags, SOUI::CPoint point)
 		{
 			CEdit9527 *pET = (CEdit9527*)SApplication::getSingleton().CreateWindowByName(L"et9527");
 			SASSERT(pET);
+			
+			pET->SetHost(this);
 			SApplication::getSingleton().SetSwndDefAttr(pET);
+
 			this->InsertChild(pET);
+			
 			pET->SSendMessage(WM_CREATE);
 			SStringT etPos;
 			CPoint etPt = m_clickPoint;
@@ -270,10 +280,6 @@ void SSnapshotCtrl::OnLButtonUp(UINT nFlags, SOUI::CPoint point)
 	m_pt.SetPoint(m_ptDown.x, m_ptDown.y);
 	m_vecDoodlePoints.clear();
 	m_vecMaskPoints.clear();
-
-	EventRectCaptured evt(this);
-	evt.pt = point;
-	FireEvent(evt);
 
 	Invalidate();
 }
@@ -310,7 +316,6 @@ void SSnapshotCtrl::OnMouseMove(UINT nFlags, SOUI::CPoint point)
 
 				CalcPos();
 				Invalidate();
-
 				EventCapturing evt(this);
 				evt.pt = point;
 				FireEvent(evt);
@@ -321,7 +326,6 @@ void SSnapshotCtrl::OnMouseMove(UINT nFlags, SOUI::CPoint point)
 				m_rcCapture.IntersectRect(m_rcCapture, GetWindowRect());
 				if (!m_rcCapture.IsRectEmpty())
 				{
-					Invalidate();
 					EventCapturing evt(this);
 					evt.pt = point;
 					FireEvent(evt);
@@ -702,6 +706,11 @@ void SSnapshotCtrl::ShowCursor(EcPosType ePos)
 	default:
 		break;
 	}
+}
+
+bool SSnapshotCtrl::canProcessMsg()
+{
+	return m_nOperateType==6;
 }
 
 void SSnapshotCtrl::SetBmpResource(CBitmap* pBmp)

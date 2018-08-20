@@ -127,15 +127,13 @@ bool CSnapshotDlg::OnEventCapturing(EventCapturing* pEvt)
 {
 	SStatic* pText = FindChildByName2<SStatic>(L"text_title");
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
-	SWindow* pOperateBar = FindChildByName2<SWindow>(L"operate_bar");
+	
 	SASSERT(pText);
 	SASSERT(pSnapshot);
-	SASSERT(pOperateBar);
+	
 
 	if (!pText->IsVisible())
-		pText->SetVisible(TRUE, FALSE);
-	if (!pOperateBar->IsVisible())
-		pOperateBar->SetVisible(TRUE, FALSE);
+		pText->SetVisible(TRUE, FALSE);	
 
 	SOUI::CRect rcCap = pSnapshot->GetCapRect();
 	SStringW sstrTitle;
@@ -156,26 +154,7 @@ bool CSnapshotDlg::OnEventCapturing(EventCapturing* pEvt)
 	SStringW sstrTitlePos;
 	sstrTitlePos.Format(L"%d,%d", nX, nY);
 	pText->SetAttribute(L"pos", sstrTitlePos);
-
-	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
-	int nOperateBarX = rcCap.right - rcOperateBar.Width();
-	if (nOperateBarX < rcWnd.left)
-		nOperateBarX = rcWnd.left;
-
-	//modify by yangjinpeng 2018-07-23	优化AttrBar的位置
-	//begin
-	int nOperateBarY = 0;	
-	if ((rcWnd.bottom - rcCap.bottom - 2) > rcOperateBar.Height())
-		nOperateBarY = rcCap.bottom + 2;
-	else if ((rcCap.top - rcWnd.top - 2) > rcOperateBar.Height())	
-		nOperateBarY = rcCap.top - rcOperateBar.Height() - 2;
-	else
-		nOperateBarY = rcCap.top + 2;
-
-	SStringW ssOperateBarPos;
-	ssOperateBarPos.Format(_T("%d,%d"), nOperateBarX, nOperateBarY);
-	pOperateBar->SetAttribute(L"pos", ssOperateBarPos, FALSE);
-
+	
 	return true;
 }
 
@@ -241,6 +220,58 @@ bool CSnapshotDlg::OnEventRectMoving(EventRectMoving* pEvt)
 
 bool CSnapshotDlg::OnEventRectCaptured(EventRectCaptured* pEvt)
 {
+	SStatic* pText = FindChildByName2<SStatic>(L"text_title");
+	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
+	SWindow* pOperateBar = FindChildByName2<SWindow>(L"operate_bar");
+	SASSERT(pText);
+	SASSERT(pSnapshot);
+	SASSERT(pOperateBar);
+
+	if (!pText->IsVisible())
+		pText->SetVisible(TRUE, FALSE);
+	if (!pOperateBar->IsVisible())
+		pOperateBar->SetVisible(TRUE, FALSE);
+
+	SOUI::CRect rcCap = pSnapshot->GetCapRect();
+	SStringW sstrTitle;
+	sstrTitle.Format(L"起始位置：%d.%d  区域大小：%d × %d", rcCap.left, rcCap.top, rcCap.Width(), rcCap.Height());
+	pText->SetWindowText(sstrTitle);
+
+	SOUI::CRect rcText = pText->GetWindowRect();
+	SOUI::CRect rcWnd = GetWindowRect();
+
+	int nX = rcCap.left;
+	int nY = rcCap.top - rcText.Height() - 1;
+	if (nY < 0)
+		nY = rcCap.top;
+
+	if (rcWnd.right - nX < rcText.Width())
+		nX = rcWnd.right - rcText.Width() - 1;
+
+	SStringW sstrTitlePos;
+	sstrTitlePos.Format(L"%d,%d", nX, nY);
+	pText->SetAttribute(L"pos", sstrTitlePos);
+
+	SOUI::CRect rcOperateBar = pOperateBar->GetWindowRect();
+	int nOperateBarX = rcCap.right - rcOperateBar.Width();
+	if (nOperateBarX < rcWnd.left)
+		nOperateBarX = rcWnd.left;
+
+	//modify by yangjinpeng 2018-07-23	优化AttrBar的位置
+	//begin
+	int nOperateBarY = 0;
+	if ((rcWnd.bottom - rcCap.bottom - 2) > rcOperateBar.Height())
+		nOperateBarY = rcCap.bottom + 2;
+	else if ((rcCap.top - rcWnd.top - 2) > rcOperateBar.Height())
+		nOperateBarY = rcCap.top - rcOperateBar.Height() - 2;
+	else
+		nOperateBarY = rcCap.top + 2;
+
+	SStringW ssOperateBarPos;
+	ssOperateBarPos.Format(_T("%d,%d"), nOperateBarX, nOperateBarY);
+	pOperateBar->SetAttribute(L"pos", ssOperateBarPos, FALSE);
+
+	return true;
 	return true;
 }
 

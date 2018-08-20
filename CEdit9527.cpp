@@ -12,6 +12,11 @@ namespace SOUI
 	{
 	}
 
+	void CEdit9527::SetHost(IEditHost * _ieditHost)
+	{
+		m_pHost = _ieditHost;
+	}
+
 	void CEdit9527::PaintToDC(HDC hdc)
 	{
 		CRect rcClient;
@@ -55,6 +60,13 @@ namespace SOUI
 	{
 		m_style.SetTextColor(0, color);
 		SetDefaultTextColor(m_style.GetTextColor(0));
+	}
+
+	BOOL CEdit9527::IsContainPoint(const POINT & pt, BOOL bClientOnly) const
+	{
+		if (!m_pHost->canProcessMsg())
+			return FALSE;
+		return __super::IsContainPoint(pt, bClientOnly);
 	}
 
 	LRESULT CEdit9527::OnCreate(LPVOID)
@@ -210,7 +222,6 @@ namespace SOUI
 		}
 	}
 	
-
 	void CEdit9527::OnNcLButtonUp(UINT nHitTest, CPoint point)
 	{
 		m_bDraging = FALSE;
