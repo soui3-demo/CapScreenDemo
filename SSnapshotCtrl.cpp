@@ -1094,6 +1094,18 @@ void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<SOUI::CPoint>
 	pRT->ReleaseDC(hDC);
 }
 
+#ifndef NoDrawWaterMark
+void DrawWaterMark(CDCHandle hDc,CRect m_rcCapture)
+{
+	//hDc.SetBkMode(TRANSPARENT);
+	hDc.SetTextColor(RGB(0,0,255));
+	hDc.DrawText(L"更多精彩请加群:229313785",-1, m_rcCapture, DT_VCENTER| DT_SINGLELINE| DT_CENTER);
+}
+#endif
+
+
+
+
 void SSnapshotCtrl::SaveCapBmpToClipboard()
 {
 	SOUI::CRect rcClient = GetClientRect();
@@ -1120,6 +1132,10 @@ void SSnapshotCtrl::SaveCapBmpToClipboard()
 		}
 		pChild = pChild->GetWindow(GSW_NEXTSIBLING);
 	}
+
+#ifndef NoDrawWaterMark
+	DrawWaterMark(dcMemory.m_hDC, m_rcCapture);
+#endif
 
 	dcMemory.SelectBitmap(oldbitmap);
 
@@ -1159,6 +1175,10 @@ void SSnapshotCtrl::SaveCapBmpToFile(LPCTSTR wstrSavePath)
 		}
 		pChild = pChild->GetWindow(GSW_NEXTSIBLING);
 	}
+
+#ifndef NoDrawWaterMark
+	DrawWaterMark(dcMemory.m_hDC, m_rcCapture);
+#endif
 
 	dcMemory.SelectBitmap(oldbitmap);
 
