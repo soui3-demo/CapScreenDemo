@@ -904,7 +904,7 @@ bool CSnapshotDlg::GetEncodeCLSID(int filterIdx, CLSID &clsId)
 {
 	if (filterIdx > m_encoderList.size())
 		return false;
-	clsId = m_encoderList[filterIdx].id;
+	clsId = m_encoderList[filterIdx-1].id;
 	return true;
 }
 
