@@ -112,6 +112,9 @@ BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
 	pWordSizeCbxView->SetCurSel(4);
 	pSnapshot->SetFontSize(18);
 
+
+	EnumEncoder(m_encoderList);
+
 	return TRUE;
 }
 
@@ -858,17 +861,70 @@ SStringT& CSnapshotDlg::CreateNewFileName(SStringT &filename)
 	return filename;
 }
 
+void CSnapshotDlg::EnumEncoder(std::vector<EncoderInf> &encoderList)
+{
+	encoderList.clear();
+	//编码器总数
+	UINT num;
+	//保存编码器信息需要的空间大小
+	UINT size;
+	ImageCodecInfo *pImageCodecInfo;
+	GetImageEncodersSize(&num, &size);
+	//获取编码器数组
+	pImageCodecInfo = (ImageCodecInfo*)malloc(size);
+	GetImageEncoders(num, size, pImageCodecInfo);
+	encoderList.resize(num);
+	std::wstring des;
+	for (UINT j = 0; j < num; j++) {
+		des = pImageCodecInfo[j].FormatDescription;
+		des.push_back(L'\0');
+		des+=pImageCodecInfo[j].FilenameExtension;
+		des.push_back(L'\0');
+		encoderList.insert(encoderList.begin(),EncoderInf(des, pImageCodecInfo[j].Clsid));
+	}
+	//reverse(encoderList.begin(), encoderList.end());
+
+	free(pImageCodecInfo);
+}
+
+std::wstring &CSnapshotDlg::GetEncoderStringFilter(std::wstring &strFilter)
+{
+	std::vector<EncoderInf>::iterator iter;
+	iter = m_encoderList.begin();
+	while (iter != m_encoderList.end()) {
+		strFilter += iter->name;
+		iter++;
+	}
+	strFilter.push_back(L'\0');
+
+	return strFilter;
+}
+
+bool CSnapshotDlg::GetEncodeCLSID(int filterIdx, CLSID &clsId)
+{
+	if (filterIdx > m_encoderList.size())
+		return false;
+	clsId = m_encoderList[filterIdx].id;
+	return true;
+}
+
 void CSnapshotDlg::OnBnClickSave()
 {	
 	SStringT sstrFileName;
+	std::wstring strFilter;
+	CFileDialog saveDlg(FALSE, _T("PNG"), CreateNewFileName(sstrFileName), 6, GetEncoderStringFilter(strFilter).c_str());
 	
-	CFileDialog saveDlg(FALSE, _T("png"), CreateNewFileName(sstrFileName), 6, _T("png(*.png)"));
 	if (saveDlg.DoModal() == IDOK)
 	{
 		sstrFileName = saveDlg.m_szFileName;
-		SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
-		SASSERT(pSnapshot);
-		pSnapshot->SaveCapBmpToFile(sstrFileName);
+		CLSID clsId;
+
+		if (GetEncodeCLSID(saveDlg.m_ofn.nFilterIndex,clsId)) {
+
+			SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
+			SASSERT(pSnapshot);
+			pSnapshot->SaveCapBmpToFile(sstrFileName, clsId);
+		}
 		EndDialog(IDOK);
 	}
 }

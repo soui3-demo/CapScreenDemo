@@ -249,12 +249,12 @@ void SSnapshotCtrl::OnLButtonUp(UINT nFlags, SOUI::CPoint point)
 		{
 			CEdit9527 *pET = (CEdit9527*)SApplication::getSingleton().CreateWindowByName(L"et9527");
 			SASSERT(pET);
-			
+
 			pET->SetHost(this);
 			SApplication::getSingleton().SetSwndDefAttr(pET);
 
 			this->InsertChild(pET);
-			
+
 			pET->SSendMessage(WM_CREATE);
 			SStringT etPos;
 			CPoint etPt = m_clickPoint;
@@ -710,7 +710,7 @@ void SSnapshotCtrl::ShowCursor(EcPosType ePos)
 
 bool SSnapshotCtrl::canProcessMsg()
 {
-	return m_nOperateType==6;
+	return m_nOperateType == 6;
 }
 
 void SSnapshotCtrl::SetBmpResource(CBitmap* pBmp)
@@ -1095,16 +1095,13 @@ void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<SOUI::CPoint>
 }
 
 #ifndef NoDrawWaterMark
-void DrawWaterMark(CDCHandle hDc,CRect m_rcCapture)
+void DrawWaterMark(CDCHandle hDc, CRect m_rcCapture)
 {
 	//hDc.SetBkMode(TRANSPARENT);
-	hDc.SetTextColor(RGB(0,0,255));
-	hDc.DrawText(L"更多精彩请加群:229313785",-1, m_rcCapture, DT_VCENTER| DT_SINGLELINE| DT_CENTER);
+	hDc.SetTextColor(RGB(0, 0, 255));
+	hDc.DrawText(L"更多精彩请加群:229313785", -1, m_rcCapture, DT_VCENTER | DT_SINGLELINE | DT_CENTER);
 }
 #endif
-
-
-
 
 void SSnapshotCtrl::SaveCapBmpToClipboard()
 {
@@ -1147,7 +1144,7 @@ void SSnapshotCtrl::SaveCapBmpToClipboard()
 	}
 }
 
-void SSnapshotCtrl::SaveCapBmpToFile(LPCTSTR wstrSavePath)
+void SSnapshotCtrl::SaveCapBmpToFile(LPCTSTR wstrSavePath, CLSID &encoderClsid)
 {
 	if (wstrSavePath == NULL)
 		return;
@@ -1182,9 +1179,8 @@ void SSnapshotCtrl::SaveCapBmpToFile(LPCTSTR wstrSavePath)
 
 	dcMemory.SelectBitmap(oldbitmap);
 
-	Bitmap bmp(membitmap, NULL);
-	CLSID encoderClsid;
-	GetEncoderClsid(L"image/png", &encoderClsid);
+	Bitmap bmp(membitmap, NULL);	
+	//GetEncoderClsid(L"image/png", &encoderClsid);
 	bmp.Save(wstrSavePath, &encoderClsid, NULL);
 }
 

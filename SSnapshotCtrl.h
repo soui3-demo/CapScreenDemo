@@ -64,13 +64,11 @@ public:
 	};
 
 public:
-
 	virtual bool canProcessMsg();
-
 	void SetBmpResource(CBitmap* pBmp);
-	void SetScreenSize(int nScreenX, int nScreenY);
+	void SetScreenSize(int nScreenX, int nScreenY);	
 	void SaveCapBmpToClipboard();
-	void SaveCapBmpToFile(LPCTSTR wstrSavePath);
+	void SaveCapBmpToFile(LPCTSTR wstrSavePath, CLSID &encoderClsid);
 	int GetEncoderClsid(const WCHAR * format, CLSID * pClsid);
 	void SetOperateType(int nOperateType = -1);
 	void SetPenColor(const COLORREF& color);

@@ -6,6 +6,13 @@
 class CSnapshotDlg : public SHostDialog
  	, public IWordSizeAdapterCallback
 {
+
+	struct EncoderInf {
+		EncoderInf(wstring _name, CLSID _id):name(_name), id(_id){}
+		EncoderInf() {}
+		wstring name;
+		CLSID id;
+	};
 public:	
 	~CSnapshotDlg(void);
 	CSnapshotDlg(void);
@@ -17,6 +24,12 @@ protected:
 	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);	
 protected:
 	SStringT & CreateNewFileName(SStringT &filename);
+
+	void EnumEncoder(std::vector<EncoderInf>& encoderList);
+
+	std::wstring &GetEncoderStringFilter(std::wstring &strFilter);
+
+	bool GetEncodeCLSID(int filterIdx, CLSID & clsId);
 
 	bool OnEventCapturing(EventCapturing* pEvt);
 	bool OnEventRectMoving(EventRectMoving* pEvt);
@@ -111,4 +124,8 @@ private:
 	int m_nSelectSize;	
 private:
 	void SetSelectedColor(int nIndex);
+
+	
+
+	std::vector<EncoderInf> m_encoderList;
 };
