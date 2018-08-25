@@ -1098,8 +1098,20 @@ void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<SOUI::CPoint>
 void DrawWaterMark(CDCHandle hDc, CRect m_rcCapture)
 {
 	//hDc.SetBkMode(TRANSPARENT);
-	hDc.SetTextColor(RGB(0, 0, 255));
-	hDc.DrawText(L"更多精彩请加群:229313785", -1, m_rcCapture, DT_VCENTER | DT_SINGLELINE | DT_CENTER);
+// 	hDc.SetTextColor(RGB(0, 0, 255));
+// 	hDc.DrawText(L"更多精彩请加群:229313785", -1, m_rcCapture, DT_VCENTER | DT_SINGLELINE | DT_CENTER);
+
+	Graphics graph(hDc);
+	FontFamily fontFamily(L"楷体");
+	Gdiplus::Font font(&fontFamily, 20, FontStyleRegular, UnitPoint);
+	SolidBrush blackBrush(Color(255, 255, 0, 0)); 
+	PointF pt(0, 0);
+	StringFormat format;
+	format.SetAlignment(StringAlignmentCenter);
+	graph.TranslateTransform(m_rcCapture.CenterPoint().x, m_rcCapture.CenterPoint().y);
+	graph.RotateTransform(REAL(30));
+	graph.DrawString(L"更多精彩请加群:229313785", -1, &font, pt, &format, &blackBrush);
+	graph.RotateTransform(REAL(-30));
 }
 #endif
 
