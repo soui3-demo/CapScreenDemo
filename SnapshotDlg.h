@@ -18,10 +18,7 @@ public:
 	CSnapshotDlg(void);
 
 public:
-	virtual void OnClickItem(int nIndex);
-protected:
-	BOOL OnInitDialog(HWND wnd, LPARAM lInitParam);
-	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);	
+	virtual void OnClickItem(int nIndex);	
 protected:
 	SStringT & CreateNewFileName(SStringT &filename);
 
@@ -86,11 +83,9 @@ protected:
 		EVENT_NAME_COMMAND(L"btn_save", OnBnClickSave)
 		EVENT_NAME_COMMAND(L"btn_cancel", OnBnClickCancel)
 		EVENT_NAME_COMMAND(L"btn_finish", OnBnClickFinish)
-
 		EVENT_NAME_COMMAND(L"btn_smalldot", OnBnClickSmallDot)
 		EVENT_NAME_COMMAND(L"btn_middledot", OnBnClickMiddleDot)
 		EVENT_NAME_COMMAND(L"btn_bigdot", OnBnClickBigDot)
-
 		EVENT_NAME_COMMAND(L"btn_c1", OnBnClickC1)
 		EVENT_NAME_COMMAND(L"btn_c2", OnBnClickC2)
 		EVENT_NAME_COMMAND(L"btn_c3", OnBnClickC3)
@@ -113,9 +108,15 @@ protected:
 		EVENT_NAME_COMMAND(L"btn_c20", OnBnClickC20)
 	EVENT_MAP_END()
 
+protected:
+	BOOL OnInitDialog(HWND wnd, LPARAM lInitParam);
+	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	void OnRButtonUp(UINT nFlags, CPoint point);
+
 	BEGIN_MSG_MAP_EX(CSnapshotDlg)
 		MSG_WM_INITDIALOG(OnInitDialog)
 		MSG_WM_KEYDOWN(OnKeyDown)
+		MSG_WM_RBUTTONUP(OnRButtonUp)
 		CHAIN_MSG_MAP(SHostDialog)
 	END_MSG_MAP()
 
@@ -124,8 +125,5 @@ private:
 	int m_nSelectSize;	
 private:
 	void SetSelectedColor(int nIndex);
-
-	
-
 	std::vector<EncoderInf> m_encoderList;
 };

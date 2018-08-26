@@ -759,7 +759,11 @@ void SSnapshotCtrl::SetOperateType(int nOperateType /* = -1 */)
 // 		else
 // 			nMaskSize = 18;
 		//end
-		CPixelateGrid::Pixelate(*m_MaskBitmap, 10, false);
+		CPixelateGrid::Pixelate(*m_MaskBitmap, 10);
+
+		//CLSID encoderClsid;
+		//GetEncoderClsid(L"image/png", &encoderClsid);
+		//m_MaskBitmap->Save(L"e:\\abc.png", &encoderClsid, NULL);
 	}
 }
 

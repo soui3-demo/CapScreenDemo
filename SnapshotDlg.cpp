@@ -121,9 +121,14 @@ BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
 void CSnapshotDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (nChar == VK_ESCAPE)
-		EndDialog(IDOK);
+		EndDialog(IDCANCEL);
+	else
+		SetMsgHandled(FALSE);
+}
 
-	SetMsgHandled(FALSE);
+void CSnapshotDlg::OnRButtonUp(UINT nFlags, CPoint point)
+{
+	EndDialog(IDCANCEL);
 }
 
 bool CSnapshotDlg::OnEventCapturing(EventCapturing* pEvt)
