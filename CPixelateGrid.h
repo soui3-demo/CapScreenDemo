@@ -169,8 +169,9 @@ public:
 		
 		for (int x = 0; x < nWidth; ++x)
 			for (int y = 0; y < nHeight; ++y)
-			{
-				colorList[x][y] = CalcAvarageRectColor(b, RECT{x*pixel,y*pixel, (x + 1)*pixel, (y + 1)*pixel});
+			{				
+				RECT rc = { x*pixel,y*pixel, (x + 1)*pixel, (y + 1)*pixel };
+				colorList[x][y] = CalcAvarageRectColor(b, rc);
 			}
 		OffsetFilter(b,pixel, colorList);
 		for (int i = 0; i < nWidth; i++)
