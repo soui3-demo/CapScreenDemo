@@ -1110,7 +1110,7 @@ void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<Gdiplus::Poin
 
 	Gdiplus::GraphicsPath maskPath;	
 	//AddLines
-	maskPath.AddLines(vecPoints.data(), vecPoints.size());
+	maskPath.AddLines(&vecPoints[0], vecPoints.size());
 	//graphics.DrawPath((Gdiplus::Brush*)&tBrush, &maskPath);
 	Gdiplus::Rect rcClip(m_rcCapture.left, m_rcCapture.top, m_rcCapture.Width(), m_rcCapture.Height());
 	graphics.SetClip(rcClip);
