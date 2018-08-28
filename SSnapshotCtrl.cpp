@@ -599,7 +599,7 @@ void SSnapshotCtrl::OnMouseMove(UINT nFlags, SOUI::CPoint point)
 			m_vecDoodlePoints.push_back(pt);
 			break;
 		case 5:		//mask
-			m_vecMaskPoints.push_back(pt);
+			m_vecMaskPoints.push_back(Gdiplus::Point(pt.x,pt.y));
 			break;
 		default://m_bDrawOperate = FALSE;
 			break;
@@ -792,6 +792,44 @@ void SSnapshotCtrl::SetFontSize(int size)
 	if (pFouceWnd&&pFouceWnd->IsClass(L"et9527"))
 	{
 		((CEdit9527*)pFouceWnd)->SetFontSize(m_FontSize);
+	}
+}
+
+
+//增加一个方法来获取edit可以使用的最大大小
+
+int SSnapshotCtrl::GetEtMaxWid(CRect & etRc)
+{
+	return m_rcCapture.right - etRc.left;
+}
+
+int SSnapshotCtrl::GetEtMaxWid(int etLeft)
+{
+	return m_rcCapture.right - etLeft;
+}
+
+int SSnapshotCtrl::GetEtMaxHei(CRect & etRc)
+{
+	return m_rcCapture.bottom - etRc.top;
+}
+
+void SSnapshotCtrl::GetEtMovePos(CPoint & etPos, int etWid, int etHei)
+{
+	if (etPos.x > m_rcCapture.right - etWid)
+	{
+		etPos.x = m_rcCapture.right - etWid;
+	}
+	else if (etPos.x < m_rcCapture.left)
+	{
+		etPos.x = m_rcCapture.left;
+	}
+	if (etPos.y > m_rcCapture.bottom - etHei)
+	{
+		etPos.y = m_rcCapture.bottom - etHei;
+	}
+	else if (etPos.y < m_rcCapture.top)
+	{
+		etPos.y = m_rcCapture.top;
 	}
 }
 
@@ -1044,7 +1082,7 @@ void SSnapshotCtrl::DrawDoodle(IRenderTarget* pRT, const std::vector<SOUI::CPoin
 	pRT->ReleaseDC(hDC);
 }
 
-void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<SOUI::CPoint> vecPoints)
+void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<Gdiplus::Point> vecPoints)
 {
 	if (m_MaskBitmap == NULL)
 		return;
@@ -1070,24 +1108,9 @@ void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<SOUI::CPoint>
 	Pen hPen(&tBrush, nMaskSize);
 	graphics.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);
 
-	Gdiplus::GraphicsPath maskPath;
-	for (int i = 0; i < vecPoints.size(); i++)
-	{
-		if (vecPoints.size() > i + 1)
-		{
-			//modify by yangjinpeng	2018-07-18
-			//画mask方式更改，将之前边界的限制去掉
-			//begin
-// 			if (vecPoints[i+1].x + nMaskSize >= m_rcCapture.left && 
-// 				vecPoints[i+1].x + nMaskSize <= m_rcCapture.right &&
-// 				vecPoints[i+1].y + nMaskSize >= m_rcCapture.top &&
-// 				vecPoints[i+1].y + nMaskSize <= m_rcCapture.bottom)
-			//end
-			{
-				maskPath.AddLine(vecPoints[i].x, vecPoints[i].y, vecPoints[i + 1].x, vecPoints[i + 1].y);
-			}
-		}
-	}
+	Gdiplus::GraphicsPath maskPath;	
+	//AddLines
+	maskPath.AddLines(vecPoints.data(), vecPoints.size());
 	//graphics.DrawPath((Gdiplus::Brush*)&tBrush, &maskPath);
 	Gdiplus::Rect rcClip(m_rcCapture.left, m_rcCapture.top, m_rcCapture.Width(), m_rcCapture.Height());
 	graphics.SetClip(rcClip);

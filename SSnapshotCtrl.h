@@ -76,37 +76,10 @@ public:
 	void SetFontSize(int size);
 	SOUI::CRect GetCapRect() { return m_rcCapture; }
 	//增加一个方法来获取edit可以使用的最大大小
-	int GetEtMaxWid(CRect &etRc)
-	{
-		return m_rcCapture.right - etRc.left;
-	}
-	int GetEtMaxWid(int etLeft)
-	{
-		return m_rcCapture.right - etLeft;
-	}
-	int GetEtMaxHei(CRect &etRc)
-	{
-		return m_rcCapture.bottom - etRc.top;
-	}
-	void GetEtMovePos(CPoint &etPos, int etWid, int etHei)
-	{
-		if (etPos.x > m_rcCapture.right - etWid)
-		{
-			etPos.x = m_rcCapture.right - etWid;
-		}
-		else if (etPos.x < m_rcCapture.left)
-		{
-			etPos.x = m_rcCapture.left;
-		}
-		if (etPos.y > m_rcCapture.bottom - etHei)
-		{
-			etPos.y = m_rcCapture.bottom - etHei;
-		}
-		else if (etPos.y < m_rcCapture.top)
-		{
-			etPos.y = m_rcCapture.top;
-		}
-	}
+	int GetEtMaxWid(CRect &etRc);
+	int GetEtMaxWid(int etLeft);
+	int GetEtMaxHei(CRect &etRc);
+	void GetEtMovePos(CPoint &etPos, int etWid, int etHei);
 	void RevokeOperate();
 protected:
 	void OnPaint(IRenderTarget *pRT);
@@ -134,7 +107,7 @@ private:
 	void DrawArrow(IRenderTarget* pRT, const SOUI::CPoint& point);
 	void LineArrow(HDC pDC, SOUI::CPoint p1, SOUI::CPoint p2, double theta, double alpha, int length, COLORREF clr, int size);
 	void DrawDoodle(IRenderTarget* pRT, const std::vector<SOUI::CPoint> vecPoints);
-	void DrawMask(IRenderTarget* pRT, const std::vector<SOUI::CPoint> vecPoints);
+	void DrawMask(IRenderTarget* pRT, const std::vector<Gdiplus::Point> vecPoints);
 protected:
 	SOUI_MSG_MAP_BEGIN()
 		MSG_WM_PAINT_EX(OnPaint)
@@ -157,7 +130,7 @@ private:
 	SOUI::CPoint				m_ptDown;			//鼠标按下的位置
 	SOUI::CPoint				m_pt;
 	std::vector<SOUI::CPoint>	m_vecDoodlePoints;
-	std::vector<SOUI::CPoint>	m_vecMaskPoints;
+	std::vector<Gdiplus::Point>	m_vecMaskPoints;
 
 	bool	m_bSelected;
 	bool						m_bSelectOperate;
