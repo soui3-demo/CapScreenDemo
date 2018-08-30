@@ -5,17 +5,23 @@
   <LAYOUT>
     <file name="XML_MAINWND" path="xml\dlg_main.xml"/>
     <file name="XML_DLG_SNAPSHOT" path="xml\dlg_snapshot.xml" />
-      </LAYOUT>
-  
+  </LAYOUT>
+
   <values>
-  	<file name="string" path="values\string.xml"/>
-  	<file name="color" path="values\color.xml"/>
-  	<file name="skin" path="values\skin.xml"/>
+    <file name="string" path="values\string.xml"/>
+    <file name="color" path="values\color.xml"/>
+    <file name="skin" path="values\skin.xml"/>
   </values>
 
-  <IMG>
-  </IMG>
-  
+  <CURSOR>
+    <file name="normal" path="cur\cur202.cur"/>
+    <file name="opt1" path="cur\cur104.cur"/>
+    <file name="opt2" path="cur\Handwriting.cur"/>
+    <file name="opt3_1" path="cur\cur110.cur"/>
+    <file name="opt3_2" path="cur\cur111.cur"/>
+    <file name="opt3_3" path="cur\cur112.cur"/>
+  </CURSOR>
+
   <PNG>
     <file name="IDB_PNG_RECT" path="image\rect.png" />
     <file name="IDB_PNG_ELLIPSE" path="image\ellipse.png" />
@@ -28,11 +34,11 @@
     <file name="IDB_PNG_COPY" path="image\copy.png" />
     <file name="IDB_PNG_MASK" path="image\mask.png" />
     <file name="IDB_PNG_REVOKE" path="image\revoke.png" />
-    
+
     <file name="IDB_PNG_SMALLDOT" path="image\dotsmall.png" />
     <file name="IDB_PNG_MIDDLEDOT" path="image\dotstd.png" />
     <file name="IDB_PNG_BIGDOT" path="image\dotsbig.png" />
-    
+
     <file name="IDB_PNG_C1" path="image\c1.png" />
     <file name="IDB_PNG_C2" path="image\c2.png" />
     <file name="IDB_PNG_C3" path="image\c3.png" />
@@ -53,7 +59,7 @@
     <file name="IDB_PNG_C18" path="image\c18.png" />
     <file name="IDB_PNG_C19" path="image\c19.png" />
     <file name="IDB_PNG_C20" path="image\c20.png" />
-    
+
     <file name="IDB_PNG_WORDSING" path="image\word_sign.png" />
     <file name="IDB_PNG_CBXBTN" path="image\cbx_btn.png" />
     <file name="IDB_PNG_VLINE" path="image\vlinepx33.png" />
@@ -61,4 +67,4 @@
   <ICON>
     <file name="ICON_LOGO"  path="image\soui.ico"/>
   </ICON>
-    </resource>
+</resource>

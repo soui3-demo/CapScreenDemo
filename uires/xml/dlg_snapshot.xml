@@ -8,7 +8,7 @@
       translucent="0">
 
 <root >
-  <SnapshotCtrl pos="0,0,-0,-0" name="snapshot"/>
+  <SnapshotCtrl pos="0,0,-0,-0" name="snapshot" cursor="normal"/>
   <text pos="15,15" 
         name="text_title" 
         colorText="#FFFFFF" 

@@ -23,6 +23,12 @@ SSnapshotCtrl::SSnapshotCtrl(void)
 	m_hCurBottomLeft = LoadCursor(NULL, IDC_SIZENESW);
 	m_hCurHand = LoadCursor(NULL, IDC_HAND);
 	m_hCurArrow = LoadCursor(NULL, IDC_ARROW);
+	//HCURSOR hCursor=GETRESPROVIDER->LoadCursor(L"user_cur:opt1");
+	m_hCurOpt1 = GETRESPROVIDER->LoadCursor(L"opt1");
+	m_hCurOpt2 = GETRESPROVIDER->LoadCursor(L"Opt2");
+	m_hCurOpt3[0]= GETRESPROVIDER->LoadCursor(L"opt3_1");
+	m_hCurOpt3[1] = GETRESPROVIDER->LoadCursor(L"opt3_2");
+	m_hCurOpt3[2] = GETRESPROVIDER->LoadCursor(L"opt3_3");
 
 	m_crBorder = RGBA(22, 119, 189, 255);
 	m_eDraging = EcPosType::Null;
@@ -115,57 +121,41 @@ void SSnapshotCtrl::OnPaint(IRenderTarget *pRT)
 
 	if (m_bDrawOperate)
 	{
+
 		switch (m_nOperateType)
 		{
-		case 1:  //rectangle
-		{
-			if (!m_rcRectangle.IsRectEmpty())
-				DrawRectangle(pRT, m_rcRectangle);
-		}
-		break;
-		case 2:	//ellipse
-		{
-			if (!m_rcEllipse.IsRectEmpty())
-				DrawEllipse(pRT, m_rcEllipse);
-		}
-		break;
+			case 1:  //rectangle
+				{
+					if (!m_rcRectangle.IsRectEmpty())
+						DrawRectangle(pRT, m_rcRectangle);
+				}
+				break;
+			case 2:	//ellipse
+				{
+					if (!m_rcEllipse.IsRectEmpty())
+						DrawEllipse(pRT, m_rcEllipse);
+				}
+				break;
 
-		case 3:	//arrow
-			DrawArrow(pRT, m_pt);
-			break;
+			case 3:	//arrow
+				DrawArrow(pRT, m_pt);
+				break;
 
-		case 4:	//doodle
-			DrawDoodle(pRT, m_vecDoodlePoints);
-			break;
+			case 4:	//doodle
+				DrawDoodle(pRT, m_vecDoodlePoints);
+				break;
 
-		case 5:	//mask
-			DrawMask(pRT, m_vecMaskPoints);
-			break;
+			case 5:	//mask
+				DrawMask(pRT, m_vecMaskPoints);
+				break;
 
-		default:
-			break;
+			default:
+				break;
 		}
 	}
 
 
 	pRT->ReleaseDC(hDC);
-}
-
-BOOL SSnapshotCtrl::OnEraseBkgnd(SOUI::IRenderTarget * pRT)
-{
-	// 	CDC* pDC = CDC::FromHandle(pRT->GetDC());
-	// 	BITMAP	bmp;
-	// 	m_pBitmap->GetBitmap(&bmp);
-	// 	CDC dcCompatible;
-	// 	dcCompatible.CreateCompatibleDC(pDC);
-	// 	dcCompatible.SelectObject(m_pBitmap);
-	// 
-	// 	SOUI::CRect rect(0,0, m_nScreenX, m_nScreenY);
-	// 	pDC->BitBlt(0,0, rect.Width(), rect.Height(), &dcCompatible ,0,0, SRCCOPY);
-	// 
-	// 	pRT->ReleaseDC(pDC->GetSafeHdc());
-
-	return TRUE;
 }
 
 void SSnapshotCtrl::OnLButtonDown(UINT nFlags, SOUI::CPoint point)
@@ -179,31 +169,10 @@ void SSnapshotCtrl::OnLButtonDown(UINT nFlags, SOUI::CPoint point)
 	if (!m_bSelectOperate && !m_bSelected)
 	{
 		m_eDraging = HitPos(point);
-		switch (m_eDraging)
+		OnSetCursor(point);
+		if (EcPosType::SelectRect == m_eDraging)
 		{
-		case EcPosType::TopLeft:
-		case EcPosType::BottomRight:
-			::SetCursor(m_hCurTopLeft);
-			break;
-		case EcPosType::TopCenter:
-		case EcPosType::BottomCenter:
-			::SetCursor(m_hCurTop);
-			break;
-		case EcPosType::TopRight:
-		case EcPosType::BottomLeft:
-			::SetCursor(m_hCurTopRight);
-			break;
-		case EcPosType::LeftCenter:
-		case EcPosType::RightCenter:
-			::SetCursor(m_hCurLeft);
-			break;
-		case EcPosType::SelectRect:
-			::SetCursor(m_hCurSelect);
 			m_ptDown = point - m_rcCapture.TopLeft();
-			break;
-		case EcPosType::Null:
-		default:
-			break;
 		}
 	}
 	else
@@ -215,12 +184,6 @@ void SSnapshotCtrl::OnLButtonDown(UINT nFlags, SOUI::CPoint point)
 			else
 				m_clickPoint = point;
 		}
-		// 		if (PtInRect(&m_rcCapture, point) && m_nOperateType!=6)
-		// 			m_bDrawOperate = true;
-		// 		else
-		// 		{
-		// 			m_clickPoint = point;
-		// 		}
 	}
 }
 
@@ -270,6 +233,7 @@ void SSnapshotCtrl::OnLButtonUp(UINT nFlags, SOUI::CPoint point)
 	}
 	if (m_bDrawOperate)
 	{
+		m_pt = point;
 		m_pBitmap = new CBitmap(CopyCurBitmap(0, 0, m_nScreenX, m_nScreenY));
 		if (m_pBitmap)
 			m_vecBitmap.push_back(m_pBitmap);
@@ -299,6 +263,8 @@ void SSnapshotCtrl::OnLButtonDblClk(UINT nFlags, SOUI::CPoint point)
 
 void SSnapshotCtrl::OnMouseMove(UINT nFlags, SOUI::CPoint point)
 {
+	OnSetCursor(point);
+
 	if (!m_bSelectOperate)
 	{
 		if (m_bSelected)
@@ -337,231 +303,222 @@ void SSnapshotCtrl::OnMouseMove(UINT nFlags, SOUI::CPoint point)
 		{
 			if (EcPosType::Null == m_eDraging)
 			{
-				ShowCursor(HitPos(point));
+				//OnSetCursor(point);
 				return;
 			}
 
 			SOUI::CRect rcWnd = GetWindowRect();
 			switch (m_eDraging)
 			{
-			case EcPosType::Null:
-				break;
-			case EcPosType::TopLeft:
-			{
-				if (point.x > m_rcCapture.right && point.y > m_rcCapture.bottom)
-				{
-					m_eDraging = EcPosType::BottomRight;
+				case EcPosType::Null:
+					break;
+				case EcPosType::TopLeft:
+					{
+						if (point.x > m_rcCapture.right && point.y > m_rcCapture.bottom)
+						{
+							m_eDraging = EcPosType::BottomRight;
 
-					m_rcCapture.left = m_rcCapture.right;
-					m_rcCapture.right = point.x;
-					m_rcCapture.top = m_rcCapture.bottom;
-					m_rcCapture.bottom = point.y;
-				}
-				else if (point.x > m_rcCapture.right)
-				{
-					m_eDraging = EcPosType::TopRight;
-					m_rcCapture.left = m_rcCapture.right;
-					m_rcCapture.right = point.x;
-				}
-				else if (point.y > m_rcCapture.bottom)
-				{
-					m_eDraging = EcPosType::BottomLeft;
-					m_rcCapture.top = m_rcCapture.bottom;
-					m_rcCapture.bottom = point.y;
-				}
-				else
-				{
-					m_rcCapture.left = (point.x > rcWnd.left) ? point.x : rcWnd.left;
-					m_rcCapture.top = (point.y > rcWnd.top) ? point.y : rcWnd.top;
-				}
-			}
-			break;
-			case EcPosType::TopCenter:
-			{
-				if (point.y > m_rcCapture.bottom)
-				{
-					m_eDraging = EcPosType::BottomCenter;
-					m_rcCapture.top = m_rcCapture.bottom;
-					m_rcCapture.bottom = point.y;
-				}
-				else
-				{
-					m_rcCapture.top = (point.y > rcWnd.top) ? point.y : rcWnd.top;
-				}
-			}
-			break;
-			case EcPosType::TopRight:
-			{
-				if (point.x < m_rcCapture.left && point.y > m_rcCapture.bottom)
-				{
-					m_eDraging = EcPosType::BottomLeft;
+							m_rcCapture.left = m_rcCapture.right;
+							m_rcCapture.right = point.x;
+							m_rcCapture.top = m_rcCapture.bottom;
+							m_rcCapture.bottom = point.y;
+						}
+						else if (point.x > m_rcCapture.right)
+						{
+							m_eDraging = EcPosType::TopRight;
+							m_rcCapture.left = m_rcCapture.right;
+							m_rcCapture.right = point.x;
+						}
+						else if (point.y > m_rcCapture.bottom)
+						{
+							m_eDraging = EcPosType::BottomLeft;
+							m_rcCapture.top = m_rcCapture.bottom;
+							m_rcCapture.bottom = point.y;
+						}
+						else
+						{
+							m_rcCapture.left = (point.x > rcWnd.left) ? point.x : rcWnd.left;
+							m_rcCapture.top = (point.y > rcWnd.top) ? point.y : rcWnd.top;
+						}
+					}
+					break;
+				case EcPosType::TopCenter:
+					{
+						if (point.y > m_rcCapture.bottom)
+						{
+							m_eDraging = EcPosType::BottomCenter;
+							m_rcCapture.top = m_rcCapture.bottom;
+							m_rcCapture.bottom = point.y;
+						}
+						else
+						{
+							m_rcCapture.top = (point.y > rcWnd.top) ? point.y : rcWnd.top;
+						}
+					}
+					break;
+				case EcPosType::TopRight:
+					{
+						if (point.x < m_rcCapture.left && point.y > m_rcCapture.bottom)
+						{
+							m_eDraging = EcPosType::BottomLeft;
 
-					m_rcCapture.right = m_rcCapture.left;
-					m_rcCapture.left = point.x;
+							m_rcCapture.right = m_rcCapture.left;
+							m_rcCapture.left = point.x;
 
-					m_rcCapture.top = m_rcCapture.bottom;
-					m_rcCapture.bottom = point.y;
-				}
-				else if (point.x < m_rcCapture.left)
-				{
-					m_eDraging = EcPosType::TopLeft;
+							m_rcCapture.top = m_rcCapture.bottom;
+							m_rcCapture.bottom = point.y;
+						}
+						else if (point.x < m_rcCapture.left)
+						{
+							m_eDraging = EcPosType::TopLeft;
 
-					m_rcCapture.right = m_rcCapture.left;
-					m_rcCapture.left = point.x;
-				}
-				else if (point.y > m_rcCapture.bottom)
-				{
-					m_eDraging = EcPosType::BottomRight;
+							m_rcCapture.right = m_rcCapture.left;
+							m_rcCapture.left = point.x;
+						}
+						else if (point.y > m_rcCapture.bottom)
+						{
+							m_eDraging = EcPosType::BottomRight;
 
-					m_rcCapture.top = m_rcCapture.bottom;
-					m_rcCapture.bottom = point.y;
-				}
-				else
-				{
-					m_rcCapture.top = (point.y > rcWnd.top) ? point.y : rcWnd.top;
-					m_rcCapture.right = (point.x < rcWnd.right) ? point.x : rcWnd.right;
-				}
-			}
-			break;
-			case EcPosType::RightCenter:
-			{
-				if (point.x < m_rcCapture.left)
-				{// 如果 过线了 就 换成 反的
-					m_eDraging = EcPosType::LeftCenter;
-					m_rcCapture.right = m_rcCapture.left;
-					m_rcCapture.left = point.x;
-				}
-				else
-				{
-					m_rcCapture.right = (point.x < rcWnd.right) ? point.x : rcWnd.right;
-				}
-			}
-			break;
-			case EcPosType::BottomRight:
-			{
-				if (point.x < m_rcCapture.left && point.y < m_rcCapture.top)
-				{
-					m_eDraging = EcPosType::TopLeft;
+							m_rcCapture.top = m_rcCapture.bottom;
+							m_rcCapture.bottom = point.y;
+						}
+						else
+						{
+							m_rcCapture.top = (point.y > rcWnd.top) ? point.y : rcWnd.top;
+							m_rcCapture.right = (point.x < rcWnd.right) ? point.x : rcWnd.right;
+						}
+					}
+					break;
+				case EcPosType::RightCenter:
+					{
+						if (point.x < m_rcCapture.left)
+						{// 如果 过线了 就 换成 反的
+							m_eDraging = EcPosType::LeftCenter;
+							m_rcCapture.right = m_rcCapture.left;
+							m_rcCapture.left = point.x;
+						}
+						else
+						{
+							m_rcCapture.right = (point.x < rcWnd.right) ? point.x : rcWnd.right;
+						}
+					}
+					break;
+				case EcPosType::BottomRight:
+					{
+						if (point.x < m_rcCapture.left && point.y < m_rcCapture.top)
+						{
+							m_eDraging = EcPosType::TopLeft;
 
-					m_rcCapture.right = m_rcCapture.left;
-					m_rcCapture.left = point.x;
+							m_rcCapture.right = m_rcCapture.left;
+							m_rcCapture.left = point.x;
 
-					m_rcCapture.bottom = m_rcCapture.top;
-					m_rcCapture.top = point.y;
-				}
-				else if (point.x < m_rcCapture.left)
-				{
-					m_eDraging = EcPosType::BottomLeft;
+							m_rcCapture.bottom = m_rcCapture.top;
+							m_rcCapture.top = point.y;
+						}
+						else if (point.x < m_rcCapture.left)
+						{
+							m_eDraging = EcPosType::BottomLeft;
 
-					m_rcCapture.right = m_rcCapture.left;
-					m_rcCapture.left = point.x;
-				}
-				else if (point.y < m_rcCapture.top)
-				{
-					m_eDraging = EcPosType::TopRight;
+							m_rcCapture.right = m_rcCapture.left;
+							m_rcCapture.left = point.x;
+						}
+						else if (point.y < m_rcCapture.top)
+						{
+							m_eDraging = EcPosType::TopRight;
 
-					m_rcCapture.bottom = m_rcCapture.top;
-					m_rcCapture.top = point.y;
-				}
-				else
-				{
-					m_rcCapture.bottom = (point.y < rcWnd.bottom) ? point.y : rcWnd.bottom;
-					m_rcCapture.right = (point.x < rcWnd.right) ? point.x : rcWnd.right;
-				}
-			}
-			break;
-			case EcPosType::BottomCenter:
-			{
-				if (point.y < m_rcCapture.top)
-				{
-					m_eDraging = EcPosType::TopCenter;
-					m_rcCapture.bottom = m_rcCapture.top;
-					m_rcCapture.top = point.y;
-				}
-				else
-				{
-					m_rcCapture.bottom = (point.y < rcWnd.bottom) ? point.y : rcWnd.bottom;
-				}
-			}
-			break;
-			case EcPosType::BottomLeft:
-			{
-				if (point.x > m_rcCapture.right && point.y < m_rcCapture.top)
-				{
-					m_eDraging = EcPosType::TopRight;
+							m_rcCapture.bottom = m_rcCapture.top;
+							m_rcCapture.top = point.y;
+						}
+						else
+						{
+							m_rcCapture.bottom = (point.y < rcWnd.bottom) ? point.y : rcWnd.bottom;
+							m_rcCapture.right = (point.x < rcWnd.right) ? point.x : rcWnd.right;
+						}
+					}
+					break;
+				case EcPosType::BottomCenter:
+					{
+						if (point.y < m_rcCapture.top)
+						{
+							m_eDraging = EcPosType::TopCenter;
+							m_rcCapture.bottom = m_rcCapture.top;
+							m_rcCapture.top = point.y;
+						}
+						else
+						{
+							m_rcCapture.bottom = (point.y < rcWnd.bottom) ? point.y : rcWnd.bottom;
+						}
+					}
+					break;
+				case EcPosType::BottomLeft:
+					{
+						if (point.x > m_rcCapture.right && point.y < m_rcCapture.top)
+						{
+							m_eDraging = EcPosType::TopRight;
 
-					m_rcCapture.bottom = m_rcCapture.top;
-					m_rcCapture.top = point.y;
+							m_rcCapture.bottom = m_rcCapture.top;
+							m_rcCapture.top = point.y;
 
-					m_rcCapture.left = m_rcCapture.right;
-					m_rcCapture.right = point.x;
-				}
-				else if (point.x > m_rcCapture.right)
-				{
-					m_eDraging = EcPosType::BottomRight;
-					m_rcCapture.left = m_rcCapture.right;
-					m_rcCapture.right = point.x;
-				}
-				else if (point.y < m_rcCapture.top)
-				{
-					m_eDraging = EcPosType::TopLeft;
-					m_rcCapture.bottom = m_rcCapture.top;
-					m_rcCapture.top = point.y;
-				}
-				else
-				{
-					m_rcCapture.bottom = (point.y < rcWnd.bottom) ? point.y : rcWnd.bottom;
-					m_rcCapture.left = (point.x > rcWnd.left) ? point.x : rcWnd.left;
-				}
-			}
-			break;
-			case EcPosType::LeftCenter:
-			{
-				if (point.x > m_rcCapture.right)
-				{
-					m_eDraging = EcPosType::RightCenter;
-					m_rcCapture.left = m_rcCapture.right;
-					m_rcCapture.right = point.x;
-				}
-				else
-				{
-					m_rcCapture.left = (point.x > rcWnd.left) ? point.x : rcWnd.left;
-				}
-			}
-			break;
-			case EcPosType::SelectRect:
-			{
-				SOUI::CPoint ptLT = point - m_ptDown;			// 相对 鼠标点击 时  的 偏移量  也就是 移动 的 值 
-				if (ptLT.x < rcWnd.left)
-					ptLT.x = rcWnd.left;
-				else if (ptLT.x > rcWnd.right - m_rcCapture.Width())
-					ptLT.x = rcWnd.right - m_rcCapture.Width();
-				if (ptLT.y < rcWnd.top)
-					ptLT.y = rcWnd.top;
-				else if (ptLT.y > rcWnd.bottom - m_rcCapture.Height())
-					ptLT.y = rcWnd.bottom - m_rcCapture.Height();
-				m_rcCapture.MoveToXY(ptLT);
-			}
-			break;
-			default:
-				break;
+							m_rcCapture.left = m_rcCapture.right;
+							m_rcCapture.right = point.x;
+						}
+						else if (point.x > m_rcCapture.right)
+						{
+							m_eDraging = EcPosType::BottomRight;
+							m_rcCapture.left = m_rcCapture.right;
+							m_rcCapture.right = point.x;
+						}
+						else if (point.y < m_rcCapture.top)
+						{
+							m_eDraging = EcPosType::TopLeft;
+							m_rcCapture.bottom = m_rcCapture.top;
+							m_rcCapture.top = point.y;
+						}
+						else
+						{
+							m_rcCapture.bottom = (point.y < rcWnd.bottom) ? point.y : rcWnd.bottom;
+							m_rcCapture.left = (point.x > rcWnd.left) ? point.x : rcWnd.left;
+						}
+					}
+					break;
+				case EcPosType::LeftCenter:
+					{
+						if (point.x > m_rcCapture.right)
+						{
+							m_eDraging = EcPosType::RightCenter;
+							m_rcCapture.left = m_rcCapture.right;
+							m_rcCapture.right = point.x;
+						}
+						else
+						{
+							m_rcCapture.left = (point.x > rcWnd.left) ? point.x : rcWnd.left;
+						}
+					}
+					break;
+				case EcPosType::SelectRect:
+					{
+						SOUI::CPoint ptLT = point - m_ptDown;			// 相对 鼠标点击 时  的 偏移量  也就是 移动 的 值 
+						if (ptLT.x < rcWnd.left)
+							ptLT.x = rcWnd.left;
+						else if (ptLT.x > rcWnd.right - m_rcCapture.Width())
+							ptLT.x = rcWnd.right - m_rcCapture.Width();
+						if (ptLT.y < rcWnd.top)
+							ptLT.y = rcWnd.top;
+						else if (ptLT.y > rcWnd.bottom - m_rcCapture.Height())
+							ptLT.y = rcWnd.bottom - m_rcCapture.Height();
+						m_rcCapture.MoveToXY(ptLT);
+					}
+					break;
+				default:
+					break;
 			}
 
 			ShowCursor(m_eDraging);
 			CalcPos();
 			Invalidate();
-			if (EcPosType::SelectRect == m_eDraging)
-			{
-				EventRectMoving evt(this);
-				evt.pt = point;
-				FireEvent(evt);
-			}
-			else
-			{
-				EventCapturing evt(this);
-				evt.pt = point;
-				FireEvent(evt);
-			}
+			EventRectMoving evt(this);
+			evt.pt = point;
+			FireEvent(evt);
 		}
 	}
 
@@ -579,33 +536,74 @@ void SSnapshotCtrl::OnMouseMove(UINT nFlags, SOUI::CPoint point)
 
 		switch (m_nOperateType)
 		{
-		case 1:
-		{
-			m_rcRectangle.SetRect(m_ptDown, pt);
-			m_rcRectangle.NormalizeRect();
-		}
-		break;
+			case 1:
+				{
+					m_rcRectangle.SetRect(m_ptDown, pt);
+					m_rcRectangle.NormalizeRect();
+				}
+				break;
 
-		case 2:
-		{
-			m_rcEllipse.SetRect(m_ptDown, pt);
-			m_rcEllipse.NormalizeRect();
-		}
-		break;
-		case 3:
-			m_pt = pt;
-			break;
-		case 4:		//doodle
-			m_vecDoodlePoints.push_back(pt);
-			break;
-		case 5:		//mask
-			m_vecMaskPoints.push_back(Gdiplus::Point(pt.x,pt.y));
-			break;
-		default://m_bDrawOperate = FALSE;
-			break;
+			case 2:
+				{
+					m_rcEllipse.SetRect(m_ptDown, pt);
+					m_rcEllipse.NormalizeRect();
+				}
+				break;
+			case 3:
+				m_pt = pt;
+				break;
+			case 4:		//doodle
+				m_vecDoodlePoints.push_back(pt);
+				break;
+			case 5:		//mask
+				m_vecMaskPoints.push_back(Gdiplus::Point(pt.x, pt.y));
+				break;
+			default://m_bDrawOperate = FALSE;
+				break;
 		}
 		Invalidate();
 	}
+}
+
+BOOL SSnapshotCtrl::OnSetCursor(const CPoint & pt)
+{
+	EcPosType hitTest = HitPos(pt);
+	switch (hitTest)
+	{
+		case EcPosType::TopLeft:
+		case EcPosType::BottomRight:
+			::SetCursor(m_hCurTopLeft);
+			break;
+		case EcPosType::TopCenter:
+		case EcPosType::BottomCenter:
+			::SetCursor(m_hCurTop);
+			break;
+		case EcPosType::TopRight:
+		case EcPosType::BottomLeft:
+			::SetCursor(m_hCurTopRight);
+			break;
+		case EcPosType::LeftCenter:
+		case EcPosType::RightCenter:
+			::SetCursor(m_hCurLeft);
+			break;
+		case EcPosType::SelectRect:
+			::SetCursor(m_hCurSelect);
+			break;
+		case EcPosType::Opt1:
+			::SetCursor(m_hCurOpt1);
+			break;
+		case EcPosType::Opt2:
+			::SetCursor(m_hCurOpt2);
+			break;
+		case EcPosType::Opt3:
+			::SetCursor( m_hCurOpt3[m_nPenSize==1?0:(m_nPenSize==2)?1:2]);
+			break;
+		case EcPosType::Null:
+		default:
+			__super::OnSetCursor(pt);
+			break;
+	}
+	return TRUE;
 }
 
 void SSnapshotCtrl::CalcGrayAreaRect(SOUI::CRect rcArea, RectF& rcLeft, RectF& rcTop, RectF& rcRight, RectF& rcBottom)
@@ -665,47 +663,35 @@ void SSnapshotCtrl::CalcPos()
 	m_rcPos[(int)EcPosType::LeftCenter].SetRect(rcLine.left - 1, center.y - 2, rcLine.left + 3, center.y + 2);
 }
 
-SSnapshotCtrl::EcPosType SSnapshotCtrl::HitPos(SOUI::CPoint& pt)
+SSnapshotCtrl::EcPosType SSnapshotCtrl::HitPos(const SOUI::CPoint& pt)
 {
-	for (int i = 0; i < 8; ++i)
+	if (!m_bSelectOperate && !m_bSelected)
 	{
-		if (m_rcPos[i].PtInRect(pt))
-			return EcPosType(i);
-	}
+		for (int i = 0; i < 8; ++i)
+		{
+			if (m_rcPos[i].PtInRect(pt))
+				return EcPosType(i);
+		}
 
-	if (m_rcCapture.PtInRect(pt))
-		return EcPosType::SelectRect;
+		if (m_rcCapture.PtInRect(pt))
+			return EcPosType::SelectRect;
+	}
+	//正在操作或者是在截图区则使用选中的工具鼠标形状
+	else if (m_bDrawOperate || (m_rcCapture.PtInRect(pt)))
+	{
+		EcPosType curType = EcPosType::Null;
+		switch (m_nOperateType) {
+			case 1:
+			case 2:
+			case 3:curType = EcPosType::Opt1; break;
+			case 4:curType = EcPosType::Opt2; break;
+			case 5:curType = EcPosType::Opt3; break;
+			case 6:break;
+		}
+		return curType;
+	}
 
 	return EcPosType::Null;
-}
-
-void SSnapshotCtrl::ShowCursor(EcPosType ePos)
-{
-	switch (ePos)
-	{
-	case EcPosType::TopLeft:
-	case EcPosType::BottomRight:
-		::SetCursor(m_hCurTopLeft);
-		break;
-	case EcPosType::TopCenter:
-	case EcPosType::BottomCenter:
-		::SetCursor(m_hCurTop);
-		break;
-	case EcPosType::TopRight:
-	case EcPosType::BottomLeft:
-		::SetCursor(m_hCurTopRight);
-		break;
-	case EcPosType::LeftCenter:
-	case EcPosType::RightCenter:
-		::SetCursor(m_hCurLeft);
-		break;
-	case EcPosType::SelectRect:
-		::SetCursor(m_hCurSelect);
-		break;
-	case EcPosType::Null:
-	default:
-		break;
-	}
 }
 
 bool SSnapshotCtrl::canProcessMsg()
@@ -859,29 +845,29 @@ HBITMAP SSnapshotCtrl::CopyCurBitmap(int nx, int ny, int nWidth, int nHeight)
 
 	switch (m_nOperateType)
 	{
-	case 1:
-	{
-		if (!m_rcRectangle.IsRectEmpty())
-			DrawRectangle(pMemRT, m_rcRectangle);
-	}
-	break;
-	case 2:
-	{
-		if (!m_rcEllipse.IsRectEmpty())
-			DrawEllipse(pMemRT, m_rcEllipse);
-	}
-	break;
-	case 3:
-		DrawArrow(pMemRT, m_pt);
-		break;
-	case 4:
-		DrawDoodle(pMemRT, m_vecDoodlePoints);
-		break;
-	case 5:
-		DrawMask(pMemRT, m_vecMaskPoints);
-		break;
-	default:
-		break;
+		case 1:
+			{
+				if (!m_rcRectangle.IsRectEmpty())
+					DrawRectangle(pMemRT, m_rcRectangle);
+			}
+			break;
+		case 2:
+			{
+				if (!m_rcEllipse.IsRectEmpty())
+					DrawEllipse(pMemRT, m_rcEllipse);
+			}
+			break;
+		case 3:
+			DrawArrow(pMemRT, m_pt);
+			break;
+		case 4:
+			DrawDoodle(pMemRT, m_vecDoodlePoints);
+			break;
+		case 5:
+			DrawMask(pMemRT, m_vecMaskPoints);
+			break;
+		default:
+			break;
 	}
 	CDC hMemDC;
 	HBITMAP   hBitmap, hOldBitmap;
@@ -1088,11 +1074,11 @@ void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<Gdiplus::Poin
 		return;
 	int nMaskSize = 0;
 	if (1 == m_nPenSize)
-		nMaskSize = 6;
+		nMaskSize = 10;
 	else if (2 == m_nPenSize)
-		nMaskSize = 12;
+		nMaskSize = 20;
 	else
-		nMaskSize = 18;
+		nMaskSize = 30;
 
 	SOUI::CRect rt(0, 0, m_nScreenX, m_nScreenY);
 	HDC hDC = pRT->GetDC();
@@ -1108,7 +1094,7 @@ void SSnapshotCtrl::DrawMask(IRenderTarget* pRT, const std::vector<Gdiplus::Poin
 	Pen hPen(&tBrush, nMaskSize);
 	graphics.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);
 
-	Gdiplus::GraphicsPath maskPath;	
+	Gdiplus::GraphicsPath maskPath;
 	//AddLines
 	maskPath.AddLines(&vecPoints[0], vecPoints.size());
 	//graphics.DrawPath((Gdiplus::Brush*)&tBrush, &maskPath);
@@ -1131,7 +1117,7 @@ void DrawWaterMark(CDCHandle hDc, CRect m_rcCapture)
 	Graphics graph(hDc);
 	FontFamily fontFamily(L"楷体");
 	Gdiplus::Font font(&fontFamily, 20, FontStyleRegular, UnitPoint);
-	SolidBrush blackBrush(Color(255, 255, 0, 0)); 
+	SolidBrush blackBrush(Color(255, 255, 0, 0));
 	PointF pt(0, 0);
 	StringFormat format;
 	format.SetAlignment(StringAlignmentCenter);
@@ -1218,7 +1204,7 @@ void SSnapshotCtrl::SaveCapBmpToFile(LPCTSTR wstrSavePath, CLSID &encoderClsid)
 
 	dcMemory.SelectBitmap(oldbitmap);
 
-	Bitmap bmp(membitmap, NULL);	
+	Bitmap bmp(membitmap, NULL);
 	//GetEncoderClsid(L"image/png", &encoderClsid);
 	bmp.Save(wstrSavePath, &encoderClsid, NULL);
 }
