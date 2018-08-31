@@ -82,6 +82,7 @@ public:
 	int GetEtMaxWid(CRect &etRc);
 	int GetEtMaxWid(int etLeft);
 	int GetEtMaxHei(CRect &etRc);
+	int GetEtMaxHei(int  etTop);
 	void GetEtMovePos(CPoint &etPos, int etWid, int etHei);
 	void RevokeOperate();
 protected:

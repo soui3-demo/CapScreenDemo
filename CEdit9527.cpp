@@ -156,14 +156,29 @@ namespace SOUI
 			pos.Format(L"%d,%d", pt.x, pt.y);
 			SetAttribute(L"pos", pos);
 			int max_wid = ((SSnapshotCtrl*)GetParent())->GetEtMaxWid(pt.x);
+			bool bUpdataRc = false;
 			if (max_wid<rcWnd.Width())
 			{
 				SStringT width;
 				width.Format(L"%d", max_wid);
 				SetAttribute(L"width", width);
 				//强制更新自己的m_rcWindow;
-				GetLayout()->LayoutChildren(GetParent());
+				//GetLayout()->LayoutChildren(GetParent());
+				bUpdataRc = true;
 			}
+
+			int max_hei = ((SSnapshotCtrl*)GetParent())->GetEtMaxHei(pt.y);
+			if (max_hei < rcWnd.Height())
+			{
+				SStringT height;
+				height.Format(L"%d", max_hei);
+				SetAttribute(L"height", height);
+				//强制更新自己的m_rcWindow;
+				//GetLayout()->LayoutChildren(GetParent());
+				bUpdataRc = true;
+			}
+			if(bUpdataRc)
+				GetLayout()->LayoutChildren(GetParent());
 			SSendMessage(EM_SETTARGETDEVICE, 0, 1);
 			bChanged = true;
 			SSendMessage(EM_REQUESTRESIZE, 0, 0);

@@ -799,6 +799,11 @@ int SSnapshotCtrl::GetEtMaxHei(CRect & etRc)
 	return m_rcCapture.bottom - etRc.top;
 }
 
+int SSnapshotCtrl::GetEtMaxHei(int etTop)
+{
+	return m_rcCapture.bottom - etTop;
+}
+
 void SSnapshotCtrl::GetEtMovePos(CPoint & etPos, int etWid, int etHei)
 {
 	if (etPos.x > m_rcCapture.right - etWid)
