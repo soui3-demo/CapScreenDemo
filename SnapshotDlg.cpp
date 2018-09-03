@@ -93,6 +93,7 @@ BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
 	pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventRectMoving, this);
 	pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventRectCaptured, this);
 	pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventRectDbClk, this);
+	pSnapshot->GetEventSet()->subscribeEvent(&CSnapshotDlg::OnEventReCaptured, this);
 
 	SComboView* pWordSizeCbxView = FindChildByName2<SComboView>(L"cbx_wordsize");
 	SASSERT(pWordSizeCbxView);
@@ -128,7 +129,14 @@ void CSnapshotDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CSnapshotDlg::OnRButtonUp(UINT nFlags, CPoint point)
 {
-	EndDialog(IDCANCEL);
+	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
+	SASSERT(pSnapshot);
+	if (pSnapshot->CanRevokeOperate())
+	{
+		pSnapshot->RevokeOperate();		
+	}
+	else
+		EndDialog(IDCANCEL);
 }
 
 bool CSnapshotDlg::OnEventCapturing(EventCapturing* pEvt)
@@ -163,6 +171,30 @@ bool CSnapshotDlg::OnEventCapturing(EventCapturing* pEvt)
 	sstrTitlePos.Format(L"%d,%d", nX, nY);
 	pText->SetAttribute(L"pos", sstrTitlePos);
 	
+	return true;
+}
+
+bool CSnapshotDlg::OnEventReCaptured(EventReCap * pEvt)
+{
+	SWindow* pOperateBar = FindChildByName2<SWindow>(L"operate_bar");	
+	SASSERT(pOperateBar);	
+	if (pOperateBar->IsVisible())
+		pOperateBar->SetVisible(FALSE, TRUE);
+	SWindow* pAttrBar = FindChildByName2<SWindow>(L"attrbar");
+	SASSERT(pAttrBar);
+	SWindow* pWordAttr = pAttrBar->FindChildByName2<SWindow>(L"word_attrbar");
+	SWindow* pOtherAttr = pAttrBar->FindChildByName2<SWindow>(L"other_attrbar");
+	SASSERT(pWordAttr);
+	SASSERT(pOtherAttr);
+
+	if (pAttrBar->IsVisible())
+		pAttrBar->SetVisible(FALSE, TRUE);
+	if (pWordAttr->IsVisible())
+		pWordAttr->SetVisible(FALSE, TRUE);
+	if (pOtherAttr->IsVisible())
+		pOtherAttr->SetVisible(FALSE, TRUE);
+
+
 	return true;
 }
 

@@ -11,6 +11,7 @@ SSnapshotCtrl::SSnapshotCtrl(void)
 	m_bSelected = true;
 	m_bSelectOperate = false;
 	m_bDrawOperate = false;
+	m_nOperateType = 0;
 
 	m_hCurSelect = LoadCursor(NULL, IDC_SIZEALL);
 	m_hCurTopRight = LoadCursor(NULL, IDC_SIZENESW);
@@ -26,7 +27,7 @@ SSnapshotCtrl::SSnapshotCtrl(void)
 	//HCURSOR hCursor=GETRESPROVIDER->LoadCursor(L"user_cur:opt1");
 	m_hCurOpt1 = GETRESPROVIDER->LoadCursor(L"opt1");
 	m_hCurOpt2 = GETRESPROVIDER->LoadCursor(L"Opt2");
-	m_hCurOpt3[0]= GETRESPROVIDER->LoadCursor(L"opt3_1");
+	m_hCurOpt3[0] = GETRESPROVIDER->LoadCursor(L"opt3_1");
 	m_hCurOpt3[1] = GETRESPROVIDER->LoadCursor(L"opt3_2");
 	m_hCurOpt3[2] = GETRESPROVIDER->LoadCursor(L"opt3_3");
 
@@ -37,6 +38,7 @@ SSnapshotCtrl::SSnapshotCtrl(void)
 	m_evtSet.addEvent(EVENTID(EventRectMoving));
 	m_evtSet.addEvent(EVENTID(EventRectCaptured));
 	m_evtSet.addEvent(EVENTID(EventRectDbClk));
+	m_evtSet.addEvent(EVENTID(EventReCap));
 
 	m_crPen = RGBA(0, 0, 0, 255);
 	m_nPenSize = 1;
@@ -103,20 +105,23 @@ void SSnapshotCtrl::OnPaint(IRenderTarget *pRT)
 		Pen hPen(color);
 		m_bSelected ? hPen.SetWidth(5) : hPen.SetWidth(1);
 		graph.DrawRectangle(&hPen, rcBorder);
-	}
 
-	for (int i = 0; i < 8; ++i)
-	{
-		RectF rcDot;
-		rcDot.X = m_rcPos[i].left;
-		rcDot.Y = m_rcPos[i].top;
-		rcDot.Width = m_rcPos[i].Width();
-		rcDot.Height = m_rcPos[i].Height();
+		if (!m_bSelected)
+		{
+			for (int i = 0; i < 8; ++i)
+			{
+				RectF rcDot;
+				rcDot.X = m_rcPos[i].left;
+				rcDot.Y = m_rcPos[i].top;
+				rcDot.Width = m_rcPos[i].Width();
+				rcDot.Height = m_rcPos[i].Height();
 
-		Gdiplus::Color color(GetRValue(m_crBorder), GetGValue(m_crBorder), GetBValue(m_crBorder));
-		SolidBrush hBrush(color);
-		hBrush.SetColor(color);
-		graph.FillRectangle(&hBrush, rcDot);
+				Gdiplus::Color color(GetRValue(m_crBorder), GetGValue(m_crBorder), GetBValue(m_crBorder));
+				SolidBrush hBrush(color);
+				hBrush.SetColor(color);
+				graph.FillRectangle(&hBrush, rcDot);
+			}
+		}
 	}
 
 	if (m_bDrawOperate)
@@ -263,7 +268,7 @@ void SSnapshotCtrl::OnLButtonDblClk(UINT nFlags, SOUI::CPoint point)
 
 void SSnapshotCtrl::OnMouseMove(UINT nFlags, SOUI::CPoint point)
 {
-	OnSetCursor(point);
+	
 
 	if (!m_bSelectOperate)
 	{
@@ -303,7 +308,7 @@ void SSnapshotCtrl::OnMouseMove(UINT nFlags, SOUI::CPoint point)
 		{
 			if (EcPosType::Null == m_eDraging)
 			{
-				//OnSetCursor(point);
+				OnSetCursor(point);
 				return;
 			}
 
@@ -524,6 +529,7 @@ void SSnapshotCtrl::OnMouseMove(UINT nFlags, SOUI::CPoint point)
 
 	if (m_bDrawOperate)
 	{
+		OnSetCursor(point);
 		SOUI::CPoint pt = point;
 		if (pt.x <= m_rcCapture.left)
 			pt.x = m_rcCapture.left;
@@ -596,7 +602,7 @@ BOOL SSnapshotCtrl::OnSetCursor(const CPoint & pt)
 			::SetCursor(m_hCurOpt2);
 			break;
 		case EcPosType::Opt3:
-			::SetCursor( m_hCurOpt3[m_nPenSize==1?0:(m_nPenSize==2)?1:2]);
+			::SetCursor(m_hCurOpt3[m_nPenSize == 1 ? 0 : (m_nPenSize == 2) ? 1 : 2]);
 			break;
 		case EcPosType::Null:
 		default:
@@ -781,7 +787,6 @@ void SSnapshotCtrl::SetFontSize(int size)
 	}
 }
 
-
 //增加一个方法来获取edit可以使用的最大大小
 
 int SSnapshotCtrl::GetEtMaxWid(CRect & etRc)
@@ -831,8 +836,37 @@ void SSnapshotCtrl::RevokeOperate()
 		m_vecBitmap.back()->DeleteObject();
 		m_vecBitmap.pop_back();
 		m_pBitmap = m_vecBitmap.back();
+
+		if (m_vecBitmap.size() == 1)
+		{
+			m_bSelected = true;
+			m_bSelectOperate = false;
+			m_bDrawOperate = false;
+			m_nOperateType = 0;
+			m_rcCapture.SetRectEmpty();
+			EventReCap evt(this);
+			FireEvent(evt);
+			POINT pt;
+			::GetCursorPos(&pt);
+			SSendMessage(WM_MOUSEMOVE, 0, MAKELONG(pt.y, pt.x));
+			SWindow *pChild = GetWindow(GSW_FIRSTCHILD);
+			while (pChild)
+			{
+				SWindow *pNextChild = pChild->GetWindow(GSW_NEXTSIBLING);
+				if (pChild->IsClass(_T("et9527")))
+				{
+					DestroyChild(pChild);
+				}
+				pChild = pNextChild;
+			}
+		}
 		Invalidate();
 	}
+}
+
+bool SSnapshotCtrl::CanRevokeOperate()
+{
+	return m_vecBitmap.size() > 1;
 }
 
 HBITMAP SSnapshotCtrl::CopyCurBitmap(int nx, int ny, int nWidth, int nHeight)

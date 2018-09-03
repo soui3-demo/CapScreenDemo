@@ -29,6 +29,7 @@ protected:
 	bool GetEncodeCLSID(int filterIdx, CLSID & clsId);
 
 	bool OnEventCapturing(EventCapturing* pEvt);
+	bool OnEventReCaptured(EventReCap* pEvt);
 	bool OnEventRectMoving(EventRectMoving* pEvt);
 	bool OnEventRectCaptured(EventRectCaptured* pEvt);
 	bool OnEventRectDbClk(EventRectDbClk* pEvt);

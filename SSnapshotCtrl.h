@@ -42,6 +42,15 @@ public:
 	enum { EventID = EVT_EXTERNAL_BEGIN + 54 };
 };
 
+class EventReCap : public TplEventArgs<EventReCap>
+{
+	SOUI_CLASS_NAME(EventReCap, L"on_recap")
+public:
+	EventReCap(SObject* pSender)
+		: TplEventArgs<EventReCap>(pSender) {}
+	enum { EventID = EVT_EXTERNAL_BEGIN + 55 };
+};
+
 class SSnapshotCtrl : public SWindow,public IEditHost
 {
 	SOUI_CLASS_NAME(SSnapshotCtrl, L"SnapshotCtrl")
@@ -85,6 +94,7 @@ public:
 	int GetEtMaxHei(int  etTop);
 	void GetEtMovePos(CPoint &etPos, int etWid, int etHei);
 	void RevokeOperate();
+	bool CanRevokeOperate();
 protected:
 	void OnPaint(IRenderTarget *pRT);	
 
@@ -115,15 +125,12 @@ protected:
 		MSG_WM_LBUTTONUP(OnLButtonUp)
 		MSG_WM_LBUTTONDBLCLK(OnLButtonDblClk)
 		MSG_WM_MOUSEMOVE(OnMouseMove)
-
-		SOUI_MSG_MAP_END()
+	SOUI_MSG_MAP_END()
 
 private:
-	CBitmap * m_pBitmap;
-	//Gdiplus::Image*			m_pImgMask;
-	//Image*					m_pBrushMask;
+	CBitmap *					m_pBitmap;
 	Gdiplus::Bitmap*			m_MaskBitmap;
-	int						m_nScreenX, m_nScreenY;
+	int							m_nScreenX, m_nScreenY;
 	std::vector<CBitmap*>		m_vecBitmap;
 
 	SOUI::CPoint				m_ptDown;			//鼠标按下的位置
@@ -131,27 +138,27 @@ private:
 	std::vector<SOUI::CPoint>	m_vecDoodlePoints;
 	std::vector<Gdiplus::Point>	m_vecMaskPoints;
 
-	bool	m_bSelected;
+	bool						m_bSelected;
 	bool						m_bSelectOperate;
 
-	SOUI::CRect				m_rcCapture;
+	SOUI::CRect					m_rcCapture;
 
-	HCURSOR					m_hCurSelect;
-	HCURSOR					m_hCurLeft, m_hCurRight, m_hCurTop, m_hCurBottom,
-		m_hCurTopLeft, m_hCurTopRight, m_hCurBottomLeft, m_hCurBottomRight,
-		m_hCurHand, m_hCurArrow;
-	HCURSOR			m_hCurOpt1, m_hCurOpt2, m_hCurOpt3[3];
-	SOUI::CRect	m_rcPos[8];
-	COLORREF		m_crBorder;
-	EcPosType		m_eDraging;
+	HCURSOR						m_hCurSelect;
+	HCURSOR						m_hCurLeft, m_hCurRight, m_hCurTop, m_hCurBottom,
+								m_hCurTopLeft, m_hCurTopRight, m_hCurBottomLeft, m_hCurBottomRight,
+								m_hCurHand, m_hCurArrow;
+	HCURSOR						m_hCurOpt1, m_hCurOpt2, m_hCurOpt3[3];
+	SOUI::CRect					m_rcPos[8];
+	COLORREF					m_crBorder;
+	EcPosType					m_eDraging;
 
-	int			m_nOperateType;
-	int			m_nPenSize;
-	COLORREF		m_crPen;
-	bool			m_bDrawOperate;
-	SOUI::CRect	m_rcRectangle;
-	SOUI::CRect	m_rcEllipse;
-	CPoint			m_clickPoint;
-	BOOL			m_ClickTwo;
-	int			m_FontSize;
+	int							m_nOperateType;
+	int							m_nPenSize;
+	COLORREF					m_crPen;
+	bool						m_bDrawOperate;
+	SOUI::CRect					m_rcRectangle;
+	SOUI::CRect					m_rcEllipse;
+	CPoint						m_clickPoint;
+	BOOL						m_ClickTwo;
+	int							m_FontSize;
 };
