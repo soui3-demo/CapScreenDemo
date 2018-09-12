@@ -81,7 +81,7 @@ BOOL CSnapshotDlg::OnInitDialog(HWND wnd, LPARAM lInitParam)
 	nHeight = nY2 - nY;
 	hBitmap = CreateCompatibleBitmap(hScrDC, nWidth, nHeight);
 	hOldBitmap = (HBITMAP)SelectObject(hMemDC, hBitmap);
-	BitBlt(hMemDC, 0, 0, nWidth, nHeight, hScrDC, nX, nY, SRCCOPY);
+	BitBlt(hMemDC, 0, 0, nWidth, nHeight, hScrDC, nX, nY, SRCCOPY | CAPTUREBLT);
 	hBitmap = (HBITMAP)SelectObject(hMemDC, hOldBitmap);
 
 	SSnapshotCtrl* pSnapshot = FindChildByName2<SSnapshotCtrl>(L"snapshot");
