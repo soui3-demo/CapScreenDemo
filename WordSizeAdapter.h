@@ -57,7 +57,7 @@ public:
 		SASSERT(pEvt_ItemPanel);
 		SWindow* pPanel = sobj_cast<SWindow>(pEvt_ItemPanel->sender);
 		SOUI::CPoint pt(GET_X_LPARAM(pEvt_ItemPanel->lParam), GET_Y_LPARAM(pEvt_ItemPanel->lParam));
-		SWND swnd = pPanel->SwndFromPoint(pt, FALSE);
+		SWND swnd = pPanel->SwndFromPoint(pt);
 		SWindow *pClicked = NULL;
 		if (swnd)
 		{

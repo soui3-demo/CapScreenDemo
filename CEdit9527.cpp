@@ -46,7 +46,7 @@ namespace SOUI
 		{
 			SStringT strDesc;
 			strDesc.Format(_T("face:%s,size:%d"), font->FamilyName(), size);
-			this->SetAttribute(L"font", strDesc);
+			m_style.SetAttribute(L"font", strDesc);
 			IFontPtr pFont = m_style.GetTextFont(0);
 			if (SUCCEEDED(InitDefaultCharFormat(&m_cfDef, pFont)))
 			{

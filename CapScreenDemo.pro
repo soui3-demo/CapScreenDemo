@@ -7,8 +7,8 @@ TARGET = CapScreenDemo
 CONFIG(x64){
 TARGET = $$TARGET"64"
 }
-include($$(SOUIPATH)/demo_com.pri)
-INCLUDEPATH += $(SOUIPATH)/controls.extend
+include($$(SOUI3PATH)/demo_com.pri)
+INCLUDEPATH += $(SOUI3PATH)/controls.extend
 
 
 CONFIG(debug,debug|release){
@@ -43,4 +43,4 @@ SOURCES += CapScreenDemo.cpp \
 	CWindowEnumer.cpp
 
 RC_FILE += CapScreenDemo.rc
-RC_INCLUDEPATH+=$(SOUIPATH)/soui-sys-resource
+RC_INCLUDEPATH+=$(SOUI3PATH)/soui-sys-resource
